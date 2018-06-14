@@ -1,0 +1,25 @@
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+#    org.springframework.boot.autoconfigure: DEBUG
+
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: SET_IN_RUN_PROPS
+            client-secret: SET_IN_RUN_PROPS
+            scope:
+              - openid
+              - profile
+              - email
+              - https://www.googleapis.com/auth/photoslibrary.readonly
+
+google.photos.api:
+  host: photoslibrary.googleapis.com
+  albums: /v1/albums
