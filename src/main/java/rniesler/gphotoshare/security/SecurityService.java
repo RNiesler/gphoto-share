@@ -37,14 +37,15 @@ public class SecurityService {
         String userInfoEndpointUri = getAuthorizedClient(token).getClientRegistration()
                 .getProviderDetails().getUserInfoEndpoint().getUri();
         if (!StringUtils.isEmpty(userInfoEndpointUri)) {    // userInfoEndpointUri is optional for OIDC Clients
-            Map<String, String> userAttributes = getOauth2AuthenticatedWebClient(token)
+            return getOauth2AuthenticatedWebClient(token)
                     .get()
                     .uri(userInfoEndpointUri)
                     .retrieve()
                     .bodyToMono(Map.class)
                     .block();
-            return userAttributes;
-        } else return Collections.emptyMap();
+        } else {
+            return Collections.emptyMap();
+        }
     }
 
     private static ExchangeFilterFunction oauth2Credentials(OAuth2AuthorizedClient authorizedClient) {

@@ -1,21 +1,22 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Spring Security - OAuth 2.0 User Info</title>
     <meta charset="utf-8"/>
 </head>
 <body>
-<div th:substituteby="index::logout"></div>
+<div th:replace="index::logout"></div>
 <h1>OAuth 2.0 User Info</h1>
 <div>
     <span style="font-weight:bold">User Albums:</span>
     <ul>
         <li th:each="album : ${albums}">
             <img th:src="${album.coverPhotoUrl}"/>
-            <a th:href="${album.url}" style="font-weight:bold" th:text="${album.name}"></a>
+            <a th:href="${album.url}" target="_blank" style="font-weight:bold" th:text="${album.name}"></a>
         </li>
     </ul>
+    <span th:if="${nextPageToken}"><a th:href="@{/albums(nextPageToken=${nextPageToken})}"
+                                      href="/albums">Next page</a></span>
 </div>
 </body>
 </html>

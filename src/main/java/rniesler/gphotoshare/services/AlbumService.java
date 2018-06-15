@@ -4,10 +4,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
-import rniesler.gphotoshare.domain.Album;
+import reactor.core.publisher.Mono;
 import rniesler.gphotoshare.domain.AlbumsList;
 import rniesler.gphotoshare.security.SecurityService;
+
+import java.util.Optional;
 
 @Service
 public class AlbumService {
@@ -25,18 +26,22 @@ public class AlbumService {
         this.GPHOTOS_API_PATH = apiPath;
     }
 
-    public Flux<Album> listAlbums(OAuth2AuthenticationToken authentication) {
+    public Mono<AlbumsList> listAlbums(OAuth2AuthenticationToken authentication, Optional<String> pageToken) {
         WebClient webClient = securityService.getOauth2AuthenticatedWebClient(authentication);
         return webClient
                 .get()
-                .uri(uriBuilder ->
-                        uriBuilder.scheme("https")
-                                .host(GPHOTOS_API_HOST)
-                                .path(GPHOTOS_API_PATH)
-                                .queryParam("pageSize", PAGE_SIZE)
-                                .build())
+                .uri(uriBuilder -> {
+                    uriBuilder.scheme("https")
+                            .host(GPHOTOS_API_HOST)
+                            .path(GPHOTOS_API_PATH);
+                    if (pageToken.isPresent()) {
+                        uriBuilder.queryParam("pageToken", pageToken.get());
+                    }
+                    return uriBuilder
+                            .queryParam("pageSize", PAGE_SIZE)
+                            .build();
+                })
                 .retrieve()
-                .bodyToMono(AlbumsList.class)
-                .flatMapIterable(albumsList -> albumsList.getAlbums());
+                .bodyToMono(AlbumsList.class);
     }
 }
