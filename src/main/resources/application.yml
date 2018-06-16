@@ -23,9 +23,9 @@ spring:
               - https://www.googleapis.com/auth/photoslibrary.appendonly # create albums
               - https://www.googleapis.com/auth/plus.circles.read       # read Google+ circles
               - https://www.googleapis.com/auth/plus.me                 # read Google+ circles
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/gphoto_share
+#  data:
+#    mongodb:
+#      uri: mongodb://localhost:27017/gphoto_share
 google:
   photos.api:
     host: photoslibrary.googleapis.com
