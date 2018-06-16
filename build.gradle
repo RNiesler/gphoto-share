@@ -33,5 +33,6 @@ dependencies {
     compile('org.springframework.security:spring-security-oauth2-jose')
     compile('org.springframework.boot:spring-boot-starter-thymeleaf')
     compile('org.thymeleaf.extras:thymeleaf-extras-springsecurity4')
+    compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }

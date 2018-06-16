@@ -8,7 +8,8 @@
 <body>
 <div style="float: right" th:fragment="logout" sec:authorize="isAuthenticated()">
     <div style="float:left">
-        <span style="font-weight:bold">User: </span><span sec:authentication="name"></span>
+        <span style="font-weight:bold">User: </span><span
+            th:text="${#authentication.principal.attributes.get('name')}"></span>
     </div>
     <div style="float:none">&nbsp;</div>
     <div style="float:right">
@@ -24,8 +25,20 @@
 </div>
 <div>&nbsp;</div>
 <div>
-    <a href="/userinfo" th:href="@{/userinfo}">Display User Info</a><br/>
-    <a href="/albums" th:href="@{/albums}">Albums</a>
+    <a href="userinfo.html" th:href="@{/userinfo}">Display User Info</a><br/>
+    <a href="albums.html" th:href="@{/albums}">Albums</a>
+    <a href="circles.html" th:href="@{/circles}">Circles</a>
+</div>
+<div>
+    <ul>
+        <li th:each="album : ${albums}">
+            <img th:src="${album.coverPhotoUrl}"/>
+            <a th:href="${album.shareInfo.shareableUrl}" target="_blank" style="font-weight:bold"
+               th:text="${album.name}">Album name</a>
+            <a th:if="${album.shareInfo.shareToken != null}"
+               href="#" th:href="@{'/albums/'+${album.id}+'/join'}">Join in Google Photos</a>
+        </li>
+    </ul>
 </div>
 </body>
 </html>

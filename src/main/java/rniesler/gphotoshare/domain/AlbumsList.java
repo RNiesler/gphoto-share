@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class AlbumsList {
-    @JsonProperty("albums")
+    @JsonProperty("sharedAlbums")
     private List<Album> albums;
     private String nextPageToken;
 }

@@ -18,8 +18,19 @@ spring:
               - openid
               - profile
               - email
-              - https://www.googleapis.com/auth/photoslibrary.readonly
-
-google.photos.api:
-  host: photoslibrary.googleapis.com
-  albums: /v1/albums
+              - https://www.googleapis.com/auth/photoslibrary.readonly  # read albums
+              - https://www.googleapis.com/auth/photoslibrary.sharing   # share albums
+              - https://www.googleapis.com/auth/photoslibrary.appendonly # create albums
+              - https://www.googleapis.com/auth/plus.circles.read       # read Google+ circles
+              - https://www.googleapis.com/auth/plus.me                 # read Google+ circles
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/gphoto_share
+google:
+  photos.api:
+    host: photoslibrary.googleapis.com
+    albums: /v1/albums
+    sharedAlbums: /v1/sharedAlbums
+  plus.api:
+    host: www.googleapis.com
+    circles: /plusDomains/v1/people/me/circles

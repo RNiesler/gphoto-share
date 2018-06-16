@@ -6,13 +6,14 @@
 </head>
 <body>
 <div th:replace="index::logout"></div>
-<h1>OAuth 2.0 User Info</h1>
+<h1>Albums</h1>
 <div>
     <span style="font-weight:bold">User Albums:</span>
     <ul>
         <li th:each="album : ${albums}">
             <img th:src="${album.coverPhotoUrl}"/>
-            <a th:href="${album.url}" target="_blank" style="font-weight:bold" th:text="${album.name}"></a>
+            <a th:href="${album.url}" target="_blank" style="font-weight:bold" th:text="${album.name}">Album name</a>
+            <a href="shareAlbum.html" th:href="@{'/albums/'+${album.id}}">Share</a>
         </li>
     </ul>
     <span th:if="${nextPageToken}"><a th:href="@{/albums(nextPageToken=${nextPageToken})}"

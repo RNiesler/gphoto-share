@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Spring Security - OAuth 2.0 User Info</title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+<div th:replace="index::logout"></div>
+<h1 th:text="${album.name}">Share Album</h1>
+<div>
+    <img th:src="${album.coverPhotoUrl}"/>
+</div>
+<div>
+    <form action="#" th:action="@{'/albums/'+${album.id}+'/share'}" th:object="${shareInfo}" method="post">
+        <label>Shareable URL: </label><input th:field="*{shareableUrl}" type="url"/>
+        <ul>
+            <li th:each="circle : ${circles}">
+                <input type="checkbox" th:field="*{sharedTo}" th:value="${circle.id}"/>
+                <label th:for="${#ids.next('sharedTo')}" th:text="${circle.name}">Circle
+                    Name</label>
+            </li>
+        </ul>
+        <input type="submit" value="Share">
+    </form>
+</div>
+</body>
+</html>

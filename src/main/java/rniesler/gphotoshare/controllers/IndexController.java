@@ -6,16 +6,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import reactor.core.publisher.Flux;
+import rniesler.gphotoshare.domain.Album;
 import rniesler.gphotoshare.security.SecurityService;
+import rniesler.gphotoshare.services.ViewerService;
 
 import java.util.Map;
 
 @Controller
 public class IndexController {
     private final SecurityService securityService;
+    private final ViewerService viewerService;
 
-    public IndexController(SecurityService securityService) {
+    public IndexController(SecurityService securityService, ViewerService viewerService) {
         this.securityService = securityService;
+        this.viewerService = viewerService;
     }
 
     @GetMapping("/")
@@ -23,6 +28,8 @@ public class IndexController {
         OAuth2AuthorizedClient authorizedClient = securityService.getAuthorizedClient(authentication);
         model.addAttribute("userName", authentication.getName());
         model.addAttribute("clientName", authorizedClient.getClientRegistration().getClientName());
+        Flux<Album> viewableAlbums = viewerService.retrieveAccessibleAlbums();
+        model.addAttribute("albums", viewableAlbums.toIterable());
         return "index";
     }
 
