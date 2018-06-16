@@ -12,13 +12,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import rniesler.gphotoshare.domain.Person;
-import rniesler.gphotoshare.services.PersonService;
+import rniesler.gphotoshare.services.impl.PersonServiceImpl;
 
 @EnableWebSecurity
 @Slf4j
 public class OAuth2LoginSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
-    private PersonService personService;
+    private PersonServiceImpl personService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
