@@ -12,6 +12,4 @@ public interface CircleService {
     Mono<Circle> get(String id);
 
     Mono<Circle> persist(Circle circle);
-
-    Mono<Void> importFromGooglePlus();
 }

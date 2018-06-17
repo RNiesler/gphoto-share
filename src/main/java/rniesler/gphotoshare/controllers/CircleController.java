@@ -35,12 +35,6 @@ public class CircleController {
         return "redirect:/circles";
     }
 
-    @PostMapping({"/import"})
-    public String importFromGooglePlus() {
-        circleService.importFromGooglePlus().block();
-        return "redirect:/circles";
-    }
-
     @GetMapping("/{id}")
     public String getCircle(@PathVariable("id") String id, Model model) {
         model.addAttribute("circle", circleService.get(id).block());

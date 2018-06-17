@@ -4,12 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import rniesler.gphotoshare.domain.Circle;
 import rniesler.gphotoshare.domain.CircleRepository;
-import rniesler.gphotoshare.domain.googleapi.GoogleCirclesResponse;
 import rniesler.gphotoshare.security.SecurityService;
 import rniesler.gphotoshare.services.CircleService;
 
@@ -47,23 +45,5 @@ public class CircleServiceImpl implements CircleService {
     @Override
     public Mono<Circle> persist(Circle circle) {
         return circleRepository.save(circle);
-    }
-
-    @Override
-    public Mono<Void> importFromGooglePlus() {
-        WebClient webClient = securityService.getOauth2AuthenticatedWebClient();
-
-        Mono<GoogleCirclesResponse> responseMono = webClient
-                .get()
-                .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
-                        .host(apiHost)
-                        .path(apiPath)
-                        .build())
-                .retrieve()
-                .bodyToMono(GoogleCirclesResponse.class);
-        //TODO fix the 403 with Google
-        return responseMono
-                .flatMapIterable(GoogleCirclesResponse::getCircleList).then();
     }
 }

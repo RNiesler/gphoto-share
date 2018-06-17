@@ -19,10 +19,7 @@ spring:
               - profile
               - email
               - https://www.googleapis.com/auth/photoslibrary.readonly  # read albums
-              - https://www.googleapis.com/auth/photoslibrary.sharing   # share albums
-              - https://www.googleapis.com/auth/photoslibrary.appendonly # create albums
-              - https://www.googleapis.com/auth/plus.circles.read       # read Google+ circles
-              - https://www.googleapis.com/auth/plus.me                 # read Google+ circles
+              - https://www.googleapis.com/auth/photoslibrary.sharing   # share & create albums          # read Google+ circles
 #  data:
 #    mongodb:
 #      uri: mongodb://localhost:27017/gphoto_share
