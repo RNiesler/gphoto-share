@@ -3,6 +3,7 @@ package rniesler.gphotoshare.services.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -28,8 +29,8 @@ public class CircleServiceImpl implements CircleService {
     }
 
     @Override
-    public Flux<Circle> findAll() {
-        return circleRepository.findAllByOwner(securityService.getAuthenticatedEmail());
+    public Flux<Circle> findAll(OAuth2AuthenticationToken authenticationToken) {
+        return circleRepository.findAllByOwner(securityService.getAuthenticatedEmail(authenticationToken));
     }
 
     @Override

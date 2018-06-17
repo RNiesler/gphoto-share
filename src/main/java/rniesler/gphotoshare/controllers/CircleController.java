@@ -1,5 +1,6 @@
 package rniesler.gphotoshare.controllers;
 
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,28 +23,28 @@ public class CircleController {
     }
 
     @GetMapping({"", "/"})
-    public String listCircles(Model model) {
-        model.addAttribute("circles", circleService.findAll().toIterable());
+    public String listCircles(Model model, OAuth2AuthenticationToken authentication) {
+        model.addAttribute("circles", circleService.findAll(authentication));
         model.addAttribute("newcircle", new Circle());
         return "circles";
     }
 
     @PostMapping({"", "/"})
-    public String newCircle(@ModelAttribute Circle circle) {
-        circle.setOwner(securityService.getAuthenticatedEmail());
+    public String newCircle(@ModelAttribute Circle circle, OAuth2AuthenticationToken authentication) {
+        circle.setOwner(securityService.getAuthenticatedEmail(authentication));
         circleService.persist(circle).block();
         return "redirect:/circles";
     }
 
     @GetMapping("/{id}")
-    public String getCircle(@PathVariable("id") String id, Model model) {
-        model.addAttribute("circle", circleService.get(id).block());
+    public String getCircle(@PathVariable("id") String id, Model model, OAuth2AuthenticationToken authentication) {
+        model.addAttribute("circle", circleService.get(id));
         model.addAttribute("newMemberCommand", new Person());
         return "circle";
     }
 
     @PostMapping("/{id}")
-    public String updateMembers(@PathVariable("id") String id, @ModelAttribute Circle circleCommand) {
+    public String updateMembers(@PathVariable("id") String id, @ModelAttribute Circle circleCommand, OAuth2AuthenticationToken authentication) {
         circleService.get(id)
                 .doOnNext(circle -> circle.setMembers(circleCommand.getMembers()))
                 .flatMap(circle -> circleService.persist(circle))

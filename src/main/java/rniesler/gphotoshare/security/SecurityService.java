@@ -9,17 +9,13 @@ import rniesler.gphotoshare.domain.Person;
 import java.util.Map;
 
 public interface SecurityService {
-    OAuth2AuthorizedClient getAuthorizedClient(OAuth2AuthenticationToken authentication);
+    Mono<OAuth2AuthorizedClient> getAuthorizedClient(OAuth2AuthenticationToken authentication);
 
-    WebClient getOauth2AuthenticatedWebClient();
+    Mono<WebClient> getOauth2AuthenticatedWebClient(OAuth2AuthenticationToken token);
 
-    WebClient getOauth2AuthenticatedWebClient(OAuth2AuthenticationToken token);
+    Mono<Person> getAuthenticatedUser(OAuth2AuthenticationToken token);
 
-    Mono<Person> getAuthenticatedUser();
+    String getAuthenticatedEmail(OAuth2AuthenticationToken token);
 
-    String getAuthenticatedEmail();
-
-    OAuth2AuthenticationToken retrieveAuthenticationToken();
-
-    Map<String, String> retrieveUserInfo(OAuth2AuthenticationToken token);
+    Mono<Map> retrieveUserInfo(OAuth2AuthenticationToken token);
 }

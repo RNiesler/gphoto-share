@@ -21,22 +21,30 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven { url "https://repo.spring.io/milestone" }    // remove once spring reaches 5.1.0 GA
 }
+
+// remove once spring reaches 5.1.0 GA
+configurations.all {
+    resolutionStrategy {
+        eachDependency {
+            if (it.requested.group == 'org.springframework.security') {
+                it.useVersion '5.1.0.M1'
+            }
+        }
+    }
+}
+
 
 
 dependencies {
     compileOnly('org.projectlombok:lombok')
-
-    // remove the dependency when upgrading to spring-security-5.1.0
-    //https://github.com/spring-projects/spring-security/issues/4807
-    compile('org.springframework.boot:spring-boot-starter-web')
 
     compile('org.springframework.boot:spring-boot-starter-webflux')
     compile('org.springframework.security:spring-security-config')
     compile('org.springframework.security:spring-security-oauth2-client')
     compile('org.springframework.security:spring-security-oauth2-jose')
     compile('org.springframework.boot:spring-boot-starter-thymeleaf')
-    compile('org.thymeleaf.extras:thymeleaf-extras-springsecurity4')
     compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
     testCompile('org.springframework.boot:spring-boot-starter-test')
 

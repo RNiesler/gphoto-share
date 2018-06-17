@@ -2,13 +2,12 @@ package rniesler.gphotoshare.services.impl;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import rniesler.gphotoshare.domain.Album;
 import rniesler.gphotoshare.domain.AlbumsRepository;
-import rniesler.gphotoshare.domain.ShareInfo;
 import rniesler.gphotoshare.domain.googleapi.JoinCommand;
 import rniesler.gphotoshare.security.SecurityService;
 import rniesler.gphotoshare.services.AlbumService;
@@ -37,26 +36,26 @@ public class ViewerServiceImpl implements ViewerService {
     }
 
     @Override
-    public Flux<Album> retrieveAccessibleAlbums() {
+    public Flux<Album> retrieveAccessibleAlbums(OAuth2AuthenticationToken authenticationToken) {
         return circleService
-                .findAllByMember(securityService.getAuthenticatedEmail())
+                .findAllByMember(securityService.getAuthenticatedEmail(authenticationToken))
                 .flatMap(circle -> albumsRepository.findAllSharedToCircle(circle.getId()));
     }
 
     @Override
-    public Mono<Void> joinAlbum(String albumId) {
-        ShareInfo newShared = albumService.createAndShareAlbum("test").block();
-        WebClient webClient = securityService.getOauth2AuthenticatedWebClient();
-        return albumService.getAlbum(albumId)
-                .flatMap(album ->
-                        webClient.post()
-                                .uri(uriBuilder -> uriBuilder.scheme("https")
-                                        .host(GPHOTOS_API_HOST)
-                                        .path(GPHOTOS_API_SHARED_ALBUMS_PATH + ":join")
-                                        .build())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .body(Mono.just(JoinCommand.builder().shareToken(newShared.getShareToken()).build()), JoinCommand.class)
-                                .exchange())
+    public Mono<Void> joinAlbum(OAuth2AuthenticationToken authenticationToken, String albumId) {
+//       return albumService.getAlbum(authenticationToken, albumId).map(Album::getShareInfo)
+        return albumService.createAndShareAlbum("test") //TODO creates and shares new album to simulate call
+                .zipWith(securityService.getOauth2AuthenticatedWebClient(authenticationToken))
+                .flatMap(tuple -> tuple.getT2()
+                        .post()
+                        .uri(uriBuilder -> uriBuilder.scheme("https")
+                                .host(GPHOTOS_API_HOST)
+                                .path(GPHOTOS_API_SHARED_ALBUMS_PATH + ":join")
+                                .build())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(Mono.just(JoinCommand.builder().shareToken(tuple.getT1().getShareToken()).build()), JoinCommand.class)
+                        .exchange())
                 .then();
     }
 

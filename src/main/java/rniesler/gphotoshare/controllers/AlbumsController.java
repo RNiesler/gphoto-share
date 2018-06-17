@@ -1,5 +1,6 @@
 package rniesler.gphotoshare.controllers;
 
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -29,41 +30,41 @@ public class AlbumsController {
     }
 
     @GetMapping({"", "/"})
-    public String listAlbums(Model model, @RequestParam(value = "nextPageToken", required = false) String pageToken) {
-        Mono<AlbumsList> albumsListMono = albumService.listAlbums(Optional.ofNullable(pageToken));
+    public String listAlbums(Model model, @RequestParam(value = "nextPageToken", required = false) String pageToken, OAuth2AuthenticationToken authentication) {
+        Mono<AlbumsList> albumsListMono = albumService.listAlbums(authentication, Optional.ofNullable(pageToken));
         Flux<Album> albumFlux = albumsListMono.flatMapIterable(AlbumsList::getAlbums);
         Mono<String> nextPageToken = albumsListMono.map(AlbumsList::getNextPageToken);
-        model.addAttribute("albums", albumFlux.toIterable());
-        model.addAttribute("nextPageToken", nextPageToken.block());
+        model.addAttribute("albums", albumFlux);
+        model.addAttribute("nextPageToken", nextPageToken);
         return "albums";
     }
 
     @GetMapping("/{id}")
-    public String getAlbum(@PathVariable("id") String id, Model model) {
-        Mono<Album> albumMono = albumService.getAlbum(id).map(album -> {
+    public String getAlbum(@PathVariable("id") String id, Model model, OAuth2AuthenticationToken authentication) {
+        Mono<Album> albumMono = albumService.getAlbum(authentication, id).map(album -> {
             if (album.getShareInfo() == null) {
                 album.setShareInfo(new ShareInfo());
             }
             return album;
         });
-        Flux<Circle> allCircles = circleService.findAll();
+        Flux<Circle> allCircles = circleService.findAll(authentication);
         Mono<ShareInfo> shareInfoMono = albumMono.map(album -> album.getShareInfo());
-        model.addAttribute("album", albumMono.block());
-        model.addAttribute("shareInfo", shareInfoMono.block());
-        model.addAttribute("circles", allCircles.toIterable());
+        model.addAttribute("album", albumMono);
+        model.addAttribute("shareInfo", shareInfoMono);
+        model.addAttribute("circles", allCircles);
         return "shareAlbum";
     }
 
     @PostMapping("/{id}/share")
-    public String shareAlbum(@PathVariable("id") String albumId, @ModelAttribute ShareInfo shareInfo) {
-        albumService.shareAlbum(albumId, shareInfo).block();
+    public String shareAlbum(@PathVariable("id") String albumId, @ModelAttribute ShareInfo shareInfo, OAuth2AuthenticationToken authentication) {
+        albumService.shareAlbum(authentication, albumId, shareInfo).block();
         return "redirect:/albums/" + albumId;
     }
 
 
     @GetMapping("/{id}/join")
-    public String joinAlbum(@PathVariable("id") String albumId) {
-        viewerService.joinAlbum(albumId).block();
+    public String joinAlbum(@PathVariable("id") String albumId, OAuth2AuthenticationToken authentication) {
+        viewerService.joinAlbum(authentication, albumId).block();
         return "redirect:/";
     }
 }
