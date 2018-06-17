@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      th:fragment="layout(title, content)">
+<head>
+    <title th:replace="${title}">Page Title</title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+<div style="float: right" th:fragment="logout" sec:authorize="isAuthenticated()">
+    <div style="float:left">
+        <span style="font-weight:bold">User: </span><span
+            th:text="${#authentication.principal.attributes.get('name')}"></span>
+    </div>
+    <div style="float:none">&nbsp;</div>
+    <div style="float:right">
+        <form action="#" th:action="@{/logout}" method="post">
+            <input type="submit" value="Logout"/>
+        </form>
+    </div>
+</div>
+<div th:fragment="navigation">
+    <a href="userinfo.html" th:href="@{/userinfo}">Display User Info</a>
+    <a href="albums.html" th:href="@{/albums}">Albums</a>
+    <a href="circles.html" th:href="@{/circles}">Circles</a>
+</div>
+<h1 th:include="${title}">Page Tile</h1>
+<div th:replace="${content}">
+    Page Content
+    <div>
+</body>
+</html>

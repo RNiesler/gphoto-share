@@ -1,13 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html th:replace="~{layout :: layout(~{::title}, ~{::section})}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Spring Security - OAuth 2.0 User Info</title>
-    <meta charset="utf-8"/>
 </head>
 <body>
-<div th:replace="index::logout"></div>
-<h1>Albums</h1>
-<div>
+<section>
     <span style="font-weight:bold">User Albums:</span>
     <ul>
         <li th:each="album : ${albums}">
@@ -18,6 +15,6 @@
     </ul>
     <span th:if="${nextPageToken}"><a th:href="@{/albums(nextPageToken=${nextPageToken})}"
                                       href="/albums">Next page</a></span>
-</div>
+</section>
 </body>
 </html>

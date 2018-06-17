@@ -1,25 +1,26 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html th:replace="~{layout :: layout(~{::title}, ~{::section})}"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Spring Security - OAuth 2.0 User Info</title>
-    <meta charset="utf-8"/>
 </head>
 <body>
-<div th:replace="index::logout"></div>
-<h1 th:text="${circle.name}">Circle Name</h1>
-<form action="#" th:action="@{'/circles/'+${circle.id}+'/members'}" th:object="${newMemberCommand}" method="post">
-    <input type="email" th:field="*{email}"/>
-    <input type="submit" value="New Member"/>
-</form>
-<table>
-    <tr th:each="member : ${circle.members}">
-        <td th:text="${member}">Member Email</td>
-        <td>
-            <form action="#" th:action="@{'/circles/'+${circle.id}+'/members/'+${member}}" method="post">
-                <input type="submit" value="Remove"/>
-            </form>
-        </td>
-    </tr>
-</table>
+<section>
+    <h1 th:text="${circle.name}">Circle Name</h1>
+    <form action="#" th:action="@{'/circles/'+${circle.id}+'/members'}" th:object="${newMemberCommand}" method="post">
+        <input type="email" th:field="*{email}"/>
+        <input type="submit" value="New Member"/>
+    </form>
+    <table>
+        <tr th:each="member : ${circle.members}">
+            <td th:text="${member}">Member Email</td>
+            <td>
+                <form action="#" th:action="@{'/circles/'+${circle.id}+'/members/'+${member}}" method="post">
+                    <input type="submit" value="Remove"/>
+                </form>
+            </td>
+        </tr>
+    </table>
+</section>
 </body>
 </html>

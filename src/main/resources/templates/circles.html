@@ -1,30 +1,30 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html th:replace="~{layout :: layout(~{::title}, ~{::section})}"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Spring Security - OAuth 2.0 User Info</title>
-    <meta charset="utf-8"/>
 </head>
 <body>
-<div th:replace="index::logout"></div>
-<h1>Albums</h1>
-<div>
-    <span style="font-weight:bold">User Circles:</span>
-    <ul>
-        <li th:each="circle : ${circles}">
-            <a href="circle.html" th:href="@{'/circles/'+${circle.id}}" th:text="${circle.name}">Circle Name</a>
-        </li>
-    </ul>
-</div>
-<div>
-    <form action="#" th:action="@{/circles/}" th:object="${newcircle}" method="post">
-        <p>Name: <input type="text" th:field="*{name}"/></p>
-        <p><input type="submit" value="Create Circle"/> <input type="reset" value="Reset"/></p>
-    </form>
-</div>
-<div>
-    <form action="#" th:action="@{/circles/import/}" method="post">
-        <input type="submit" value="Import from Google+"/>
-    </form>
-</div>
+<section>
+    <div>
+        <span style="font-weight:bold">User Circles:</span>
+        <ul>
+            <li th:each="circle : ${circles}">
+                <a href="circle.html" th:href="@{'/circles/'+${circle.id}}" th:text="${circle.name}">Circle Name</a>
+            </li>
+        </ul>
+    </div>
+    <div>
+        <form action="#" th:action="@{/circles/}" th:object="${newcircle}" method="post">
+            <p>Name: <input type="text" th:field="*{name}"/></p>
+            <p><input type="submit" value="Create Circle"/> <input type="reset" value="Reset"/></p>
+        </form>
+    </div>
+    <div>
+        <form action="#" th:action="@{/circles/import/}" method="post">
+            <input type="submit" value="Import from Google+"/>
+        </form>
+    </div>
+</section>
 </body>
 </html>
