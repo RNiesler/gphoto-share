@@ -33,7 +33,7 @@ public class OAuth2LoginSecurityConfig extends WebSecurityConfigurerAdapter {
     public void onSuccessfulAuthentication(AbstractAuthenticationEvent event) {
         OidcUserInfo userInfo = ((OidcUser) event.getAuthentication().getPrincipal()).getUserInfo();
         Person stub = Person.builder().name(userInfo.getFullName()).email(userInfo.getEmail()).build();
-        Person person = personService.getOrPersist(stub).block();
+        Person person = personService.getOrPersist(stub);
         log.info("Person id " + person.getId());
     }
 

@@ -6,9 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Example;
-import reactor.core.publisher.Mono;
 import rniesler.gphotoshare.domain.Person;
 import rniesler.gphotoshare.domain.PersonRepository;
+
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -27,28 +28,28 @@ public class PersonServiceImplTests {
     @Test
     public void testGetPersonForEmail() {
         String email = "abc";
-        when(personRepository.findByEmail(email)).thenReturn(Mono.just(Person.builder().email(email).build()));
-        Mono<Person> returnedMono = service.getPersonForEmail(email);
+        when(personRepository.findByEmail(email)).thenReturn(Optional.of(Person.builder().email(email).build()));
+        Optional<Person> returnedPerson = service.getPersonForEmail(email);
         verify(personRepository).findByEmail(email);
-        Assertions.assertEquals(email, returnedMono.block().getEmail());
+        Assertions.assertEquals(email, returnedPerson.get().getEmail());
     }
 
     @Test
     public void testGetOrPersistWhenFound() {
         Person testPerson = Person.builder().email("abc").build();
-        when(personRepository.findOne(any(Example.class))).thenReturn(Mono.just(testPerson));
-        when(personRepository.save(any(Person.class))).thenReturn(Mono.empty()); // it's still called to prepare the Mono in defaultIfEmpty
-        Mono<Person> monoPerson = service.getOrPersist(testPerson);
-        Assertions.assertEquals(testPerson, monoPerson.block());
+        when(personRepository.findOne(any(Example.class))).thenReturn(Optional.of(testPerson));
+        Person person = service.getOrPersist(testPerson);
+        verify(personRepository, never()).save(any());
+        Assertions.assertEquals(testPerson, person);
     }
 
 
     @Test
     public void testGetOrPersistWhenNotFound() {
         Person testPerson = Person.builder().email("abc").build();
-        when(personRepository.findOne(any(Example.class))).thenReturn(Mono.empty());
-        when(personRepository.save(any(Person.class))).thenReturn(Mono.just(testPerson));
-        Mono<Person> monoPerson = service.getOrPersist(testPerson);
-        Assertions.assertEquals(testPerson, monoPerson.block());
+        when(personRepository.findOne(any(Example.class))).thenReturn(Optional.empty());
+        when(personRepository.save(any(Person.class))).thenReturn(testPerson);
+        Person person = service.getOrPersist(testPerson);
+        Assertions.assertEquals(testPerson, person);
     }
 }

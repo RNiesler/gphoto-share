@@ -1,11 +1,12 @@
 package rniesler.gphotoshare.domain;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
-import reactor.core.publisher.Flux;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface CircleRepository extends ReactiveMongoRepository<Circle, ObjectId> {
-    Flux<Circle> findAllByOwner(String owner);
+import java.util.List;
 
-    Flux<Circle> findAllByMembersIsContaining(String memberEmail);
+public interface CircleRepository extends MongoRepository<Circle, ObjectId> {
+    List<Circle> findAllByOwner(String owner);
+
+    List<Circle> findAllByMembersIsContaining(String memberEmail);
 }

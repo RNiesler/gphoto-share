@@ -1,15 +1,16 @@
 package rniesler.gphotoshare.services;
 
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import rniesler.gphotoshare.domain.Circle;
 
+import java.util.List;
+import java.util.Optional;
+
 public interface CircleService {
-    Flux<Circle> findAll();
+    List<Circle> findAll();
 
-    Flux<Circle> findAllByMember(String memberEmail);
+    List<Circle> findAllByMember(String memberEmail);
 
-    Mono<Circle> get(String id);
+    Optional<Circle> get(String id);
 
-    Mono<Circle> persist(Circle circle);
+    Circle persist(Circle circle);
 }

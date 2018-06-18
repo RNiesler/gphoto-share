@@ -28,6 +28,3 @@ google:
     host: photoslibrary.googleapis.com
     albums: /v1/albums
     sharedAlbums: /v1/sharedAlbums
-  plus.api:
-    host: www.googleapis.com
-    circles: /plusDomains/v1/people/me/circles

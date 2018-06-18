@@ -1,11 +1,11 @@
 package rniesler.gphotoshare.services;
 
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import rniesler.gphotoshare.domain.Album;
 
-public interface ViewerService {
-    Flux<Album> retrieveAccessibleAlbums();
+import java.util.List;
 
-    Mono<Void> joinAlbum(String albumId);
+public interface ViewerService {
+    List<Album> retrieveAccessibleAlbums();
+
+    void joinAlbum(String albumId);
 }

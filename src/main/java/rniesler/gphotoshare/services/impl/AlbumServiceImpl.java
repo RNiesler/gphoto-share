@@ -1,12 +1,11 @@
 package rniesler.gphotoshare.services.impl;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import rniesler.gphotoshare.domain.Album;
-import rniesler.gphotoshare.domain.AlbumsList;
+import rniesler.gphotoshare.domain.googleapi.AlbumsList;
 import rniesler.gphotoshare.domain.AlbumsRepository;
 import rniesler.gphotoshare.domain.ShareInfo;
 import rniesler.gphotoshare.domain.googleapi.AlbumCommand;
@@ -40,44 +39,31 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public Mono<AlbumsList> listAlbums(Optional<String> pageToken) {
-        WebClient webClient = securityService.getOauth2AuthenticatedWebClient();
-        return webClient
-                .get()
-                .uri(uriBuilder -> {
-                    uriBuilder.scheme("https")
-                            .host(GPHOTOS_API_HOST)
-                            .path(GPHOTOS_API_SHARED_ALBUMS_PATH);
-                    if (pageToken.isPresent()) {
-                        uriBuilder.queryParam("pageToken", pageToken.get());
-                    }
-                    return uriBuilder
-                            .queryParam("pageSize", PAGE_SIZE)
-                            .build();
-                })
-                .retrieve()
-                .bodyToMono(AlbumsList.class);
+    public AlbumsList listAlbums(Optional<String> pageToken) {
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString("https://" + GPHOTOS_API_HOST + "/" + GPHOTOS_API_ALBUMS_PATH);
+        if (pageToken.isPresent()) {
+            uriBuilder.queryParam("pageToken", pageToken.get());
+        }
+        uriBuilder.queryParam("pageSize", PAGE_SIZE);
+        return securityService.getOauth2AuthenticatedRestTemplate()
+                .getForObject(uriBuilder.build().toUriString(), AlbumsList.class);
     }
 
     @Override
-    public Mono<Album> getAlbum(String albumId) {
-        return albumsRepository.findById(albumId)
-                .switchIfEmpty(securityService.getOauth2AuthenticatedWebClient()
-                        .get()
-                        .uri(uriBuilder -> uriBuilder
-                                .scheme("https")
-                                .host(GPHOTOS_API_HOST)
-                                .path(GPHOTOS_API_ALBUMS_PATH + "/" + albumId)
-                                .build())
-                        .retrieve()
-                        .bodyToMono(Album.class));
+    public Optional<Album> getAlbum(String albumId) {
+        Album album = albumsRepository.findById(albumId)
+                .orElseGet(() -> {
+                    String uri = "https://" + GPHOTOS_API_HOST + "/" + GPHOTOS_API_ALBUMS_PATH + "/" + albumId;
+                    return securityService.getOauth2AuthenticatedRestTemplate()
+                            .getForObject(uri, Album.class);
+                });
+        return Optional.ofNullable(album);
     }
 
     @Override
-    public Mono<Album> shareAlbum(final String albumId, final ShareInfo shareInfo) {
-        return albumsRepository.findById(albumId)
-                .switchIfEmpty(getAlbum(albumId))
-                .flatMap(album -> {
+    public Optional<Album> shareAlbum(final String albumId, final ShareInfo shareInfo) {
+        return getAlbum(albumId)
+                .map(album -> {
                     album.setShareInfo(shareInfo);
                     return albumsRepository.save(album);
                 });
@@ -85,31 +71,14 @@ public class AlbumServiceImpl implements AlbumService {
 
 
     @Override
-    public Mono<ShareInfo> createAndShareAlbum(String name) {
+    public ShareInfo createAndShareAlbum(String name) {
         AlbumCommand albumCommand = AlbumCommand.builder().title(name).build();
         CreateAlbumCommand createAlbumCommand = CreateAlbumCommand.builder().album(albumCommand).build();
-        WebClient webClient = securityService.getOauth2AuthenticatedWebClient();
-        // create
-        Mono<Album> createdMono = webClient
-                .post()
-                .uri(uriBuilder -> uriBuilder.scheme("https")
-                        .host(GPHOTOS_API_HOST)
-                        .path(GPHOTOS_API_ALBUMS_PATH)
-                        .build())
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(createAlbumCommand), CreateAlbumCommand.class)
-                .retrieve()
-                .bodyToMono(Album.class);
-        // share
-        Mono<ShareInfo> sharedMono = createdMono.flatMap(album -> webClient
-                .post()
-                .uri(uriBuilder -> uriBuilder.scheme("https")
-                        .host(GPHOTOS_API_HOST)
-                        .path(GPHOTOS_API_ALBUMS_PATH + "/" + album.getId() + ":share")
-                        .build())
-                .retrieve()
-                .bodyToMono(ShareInfo.class));
-        ;
-        return sharedMono;
+        RestTemplate restTemplate = securityService.getOauth2AuthenticatedRestTemplate();
+        String uri = "https://" + GPHOTOS_API_HOST + "/" + GPHOTOS_API_ALBUMS_PATH;
+        Album album = restTemplate
+                .postForObject(uri, createAlbumCommand, Album.class);
+        ShareInfo shareInfo = restTemplate.postForObject(uri + "/" + album.getId() + ":share", null, ShareInfo.class);
+        return shareInfo;
     }
 }

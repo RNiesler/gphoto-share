@@ -1,9 +1,10 @@
 package rniesler.gphotoshare.domain;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
-import reactor.core.publisher.Mono;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface PersonRepository extends ReactiveMongoRepository<Person, ObjectId> {
-    Mono<Person> findByEmail(String email);
+import java.util.Optional;
+
+public interface PersonRepository extends MongoRepository<Person, ObjectId> {
+    Optional<Person> findByEmail(String email);
 }

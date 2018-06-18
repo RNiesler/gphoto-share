@@ -2,10 +2,11 @@ package rniesler.gphotoshare.services.impl;
 
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
 import rniesler.gphotoshare.domain.Person;
 import rniesler.gphotoshare.domain.PersonRepository;
 import rniesler.gphotoshare.services.PersonService;
+
+import java.util.Optional;
 
 @Service
 public class PersonServiceImpl implements PersonService {
@@ -17,13 +18,13 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public Mono<Person> getOrPersist(Person stub) {
+    public Person getOrPersist(Person stub) {
         return personRepository.findOne(Example.of(stub))
-                .switchIfEmpty(personRepository.save(stub));
+                .orElseGet(() -> personRepository.save(stub));
     }
 
     @Override
-    public Mono<Person> getPersonForEmail(String email) {
+    public Optional<Person> getPersonForEmail(String email) {
         return personRepository.findByEmail(email);
     }
 }

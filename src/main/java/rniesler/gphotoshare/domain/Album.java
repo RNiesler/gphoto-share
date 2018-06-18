@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,6 +17,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Album {
     @Id
     private String id;
+
+    //TODO refactor to persist only ShareInfo and keep Album in some cache for max 60minut (baseUrls retention time by Google)
+
+    @Length(min = 1, max = 500) // 500 is the restriction of the Google Photos API
     @JsonProperty("title")
     private String name;
     @JsonProperty("productUrl")

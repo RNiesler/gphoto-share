@@ -2,20 +2,18 @@ package rniesler.gphotoshare.security;
 
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.web.client.RestTemplate;
 import rniesler.gphotoshare.domain.Person;
 
 import java.util.Map;
+import java.util.Optional;
 
 public interface SecurityService {
     OAuth2AuthorizedClient getAuthorizedClient(OAuth2AuthenticationToken authentication);
 
-    WebClient getOauth2AuthenticatedWebClient();
+    RestTemplate getOauth2AuthenticatedRestTemplate();
 
-    WebClient getOauth2AuthenticatedWebClient(OAuth2AuthenticationToken token);
-
-    Mono<Person> getAuthenticatedUser();
+    Optional<Person> getAuthenticatedUser();
 
     String getAuthenticatedEmail();
 

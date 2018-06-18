@@ -23,7 +23,7 @@ public class CircleController {
 
     @GetMapping({"", "/"})
     public String listCircles(Model model) {
-        model.addAttribute("circles", circleService.findAll().toIterable());
+        model.addAttribute("circles", circleService.findAll());
         model.addAttribute("newcircle", new Circle());
         return "circles";
     }
@@ -31,13 +31,13 @@ public class CircleController {
     @PostMapping({"", "/"})
     public String newCircle(@ModelAttribute Circle circle) {
         circle.setOwner(securityService.getAuthenticatedEmail());
-        circleService.persist(circle).block();
+        circleService.persist(circle);
         return "redirect:/circles";
     }
 
     @GetMapping("/{id}")
     public String getCircle(@PathVariable("id") String id, Model model) {
-        model.addAttribute("circle", circleService.get(id).block());
+        model.addAttribute("circle", circleService.get(id).orElseThrow(RuntimeException::new)); //TODO exception
         model.addAttribute("newMemberCommand", new Person());
         return "circle";
     }
@@ -45,9 +45,10 @@ public class CircleController {
     @PostMapping("/{id}")
     public String updateMembers(@PathVariable("id") String id, @ModelAttribute Circle circleCommand) {
         circleService.get(id)
-                .doOnNext(circle -> circle.setMembers(circleCommand.getMembers()))
-                .flatMap(circle -> circleService.persist(circle))
-                .block();
+                .ifPresent(circle -> {
+                    circle.setMembers(circleCommand.getMembers());
+                    circleService.persist(circle);
+                });
         return "redirect:/circles/" + id;
 
     }
@@ -55,24 +56,23 @@ public class CircleController {
     @PostMapping("/{id}/members/{member}")
     public String removeMember(@PathVariable("id") String circleId, @PathVariable("member") String memberEmail) {
         circleService.get(circleId)
-                .doOnNext(circle -> circle.getMembers().remove(memberEmail))
-                .flatMap(circle -> circleService.persist(circle))
-                .block();
+                .ifPresent(circle -> {
+                    circle.getMembers().remove(memberEmail);
+                    circleService.persist(circle);
+                });
         return "redirect:/circles/" + circleId;
     }
 
     @PostMapping("/{id}/members")
     public String addMember(@PathVariable("id") String circleId, @ModelAttribute Person newMember) {
         circleService.get(circleId)
-                .doOnNext(circle -> {
+                .ifPresent(circle -> {
                     if (circle.getMembers() == null) {
                         circle.setMembers(new LinkedList<>());
                     }
                     circle.getMembers().add(newMember.getEmail());
-                })
-                .flatMap(circle -> circleService.persist(circle))
-                .block();
+                    circleService.persist(circle);
+                });
         return "redirect:/circles/" + circleId;
     }
-    //TODO import circles from G+ (w || wo resetting)
 }

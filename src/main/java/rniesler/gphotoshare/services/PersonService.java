@@ -1,10 +1,11 @@
 package rniesler.gphotoshare.services;
 
-import reactor.core.publisher.Mono;
 import rniesler.gphotoshare.domain.Person;
 
-public interface PersonService {
-    Mono<Person> getOrPersist(Person stub);
+import java.util.Optional;
 
-    Mono<Person> getPersonForEmail(String email);
+public interface PersonService {
+    Person getOrPersist(Person stub);
+
+    Optional<Person> getPersonForEmail(String email);
 }
