@@ -17,10 +17,9 @@ import java.util.Optional;
 
 @Service
 public class AlbumServiceImpl implements AlbumService {
-    private final String GPHOTOS_API_SHARED_ALBUMS_PATH;
     private final String GPHOTOS_API_ALBUMS_PATH;
 
-    private final int PAGE_SIZE = 2;
+    private final int PAGE_SIZE = 10;
 
     private final SecurityService securityService;
     private final AlbumsRepository albumsRepository;

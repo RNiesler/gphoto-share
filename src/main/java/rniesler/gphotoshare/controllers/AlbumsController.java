@@ -28,9 +28,10 @@ public class AlbumsController {
     }
 
     @GetMapping({"", "/"})
-    public String listAlbums(Model model, @RequestParam(value = "nextPageToken", required = false) String pageToken) {
-        AlbumsList albumsList = albumService.listAlbums(Optional.ofNullable(pageToken));
+    public String listAlbums(Model model, @RequestParam(value = "nextPageToken", required = false) Optional<String> pageToken) {
+        AlbumsList albumsList = albumService.listAlbums(pageToken);
         model.addAttribute("albums", albumsList.getAlbums());
+        pageToken.ifPresent(token -> model.addAttribute("pageToken", pageToken));
         model.addAttribute("nextPageToken", albumsList.getNextPageToken());
         return "albums";
     }

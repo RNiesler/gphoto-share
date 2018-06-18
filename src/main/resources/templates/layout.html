@@ -12,26 +12,33 @@
           crossorigin="anonymous">
 </head>
 <body>
-<div style="float: right" th:fragment="logout" sec:authorize="isAuthenticated()">
-    <div style="float:left">
-        <span style="font-weight:bold">User: </span><span
-            th:text="${#authentication.principal.attributes.get('name')}"></span>
+<div class="container-fluid">
+    <div style="float: right" th:fragment="logout" sec:authorize="isAuthenticated()" class="row">
+        <div style="float:left">
+            <span style="font-weight:bold">User: </span><span
+                th:text="${#authentication.principal.attributes.get('name')}">User Name</span>
+        </div>
+        <div style="float:none">&nbsp;</div>
+        <div style="float:right">
+            <form action="#" th:action="@{/logout}" method="post">
+                <input type="submit" value="Logout" class="btn btn-primary"/>
+            </form>
+        </div>
     </div>
-    <div style="float:none">&nbsp;</div>
-    <div style="float:right">
-        <form action="#" th:action="@{/logout}" method="post">
-            <input type="submit" value="Logout"/>
-        </form>
+    <div th:fragment="navigation" class="row">
+        <ul class="nav">
+            <li class="nav-item"><a href="userinfo.html" class="nav-link" th:href="@{/userinfo}">Display User Info</a>
+            </li>
+            <li class="nav-item"><a href="albums.html" class="nav-link" th:href="@{/albums}">Albums</a></li>
+            <li class="nav-item"><a href="circles.html" class="nav-link" th:href="@{/circles}">Circles</a></li>
+        </ul>
     </div>
-</div>
-<div th:fragment="navigation">
-    <a href="userinfo.html" th:href="@{/userinfo}">Display User Info</a>
-    <a href="albums.html" th:href="@{/albums}">Albums</a>
-    <a href="circles.html" th:href="@{/circles}">Circles</a>
-</div>
-<h1 th:include="${title}">Page Tile</h1>
-<div th:replace="${content}">
-    Page Content
+    <h1 th:include="${title}" class="row">Page Tile</h1>
+    <div class="row">
+        <div th:replace="${content}">
+            Page Content
+        </div>
+    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

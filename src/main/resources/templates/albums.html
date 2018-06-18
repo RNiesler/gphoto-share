@@ -1,20 +1,30 @@
 <!DOCTYPE html>
 <html th:replace="~{layout :: layout(~{::title}, ~{::section})}" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Spring Security - OAuth 2.0 User Info</title>
+    <title>User Albums</title>
 </head>
 <body>
-<section>
-    <span style="font-weight:bold">User Albums:</span>
-    <ul>
-        <li th:each="album : ${albums}">
-            <img th:src="${album.coverPhotoUrl}"/>
-            <a th:href="${album.url}" target="_blank" style="font-weight:bold" th:text="${album.name}">Album name</a>
-            <a href="shareAlbum.html" th:href="@{'/albums/'+${album.id}}">Share</a>
+<section class="container">
+    <ul class="pagination">
+
+        <li class="page-item" th:if="${pageToken}"><a class="page-link" th:href="@{/albums}"
+                                                      href="albums.html">First</a>
+        </li>
+        <li class="page-item" th:if="${nextPageToken}"><a class="page-link"
+                                                          th:href="@{/albums(nextPageToken=${nextPageToken})}"
+                                                          href="albums.html">Next</a>
         </li>
     </ul>
-    <span th:if="${nextPageToken}"><a th:href="@{/albums(nextPageToken=${nextPageToken})}"
-                                      href="/albums">Next page</a></span>
+    <div class="row">
+        <div class="card col-sm-6" th:each="album : ${albums}">
+            <a th:href="${album.url}" target="_blank"><img class="card-img-top" th:src="${album.coverPhotoUrl}"/></a>
+            <div class="card-body">
+                <h5 class="card-title" th:text="${album.name}"><a th:href="${album.url}" target="_blank">Album name</a>
+                </h5>
+                <a href="shareAlbum.html" th:href="@{'/albums/'+${album.id}}" class="btn btn-primary">Share</a>
+            </div>
+        </div>
+    </div>
 </section>
 </body>
 </html>
