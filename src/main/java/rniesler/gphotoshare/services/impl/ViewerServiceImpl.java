@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class ViewerServiceImpl implements ViewerService {
-    private final String GPHOTOS_API_HOST;
     private final String GPHOTOS_API_SHARED_ALBUMS_PATH;
     private final AlbumsRepository albumsRepository;
     private final CircleService circleService;
@@ -26,13 +25,11 @@ public class ViewerServiceImpl implements ViewerService {
 
     public ViewerServiceImpl(AlbumsRepository albumsRepository, CircleService circleService,
                              SecurityService securityService, AlbumService albumService,
-                             @Value("${google.photos.api.host}") String apiHost,
                              @Value("${google.photos.api.sharedAlbums}") String sharedAlbumsApiPath) {
         this.albumsRepository = albumsRepository;
         this.circleService = circleService;
         this.securityService = securityService;
         this.albumService = albumService;
-        this.GPHOTOS_API_HOST = apiHost;
         this.GPHOTOS_API_SHARED_ALBUMS_PATH = sharedAlbumsApiPath;
     }
 
@@ -51,9 +48,8 @@ public class ViewerServiceImpl implements ViewerService {
         albumService.getAlbum(albumId)
                 .ifPresent(album -> {
                     RestTemplate restTemplate = securityService.getOauth2AuthenticatedRestTemplate();
-                    String uri = "https://" + GPHOTOS_API_HOST + "/" + GPHOTOS_API_SHARED_ALBUMS_PATH + ":join";
                     restTemplate
-                            .postForLocation(uri, JoinCommand.builder().shareToken(newShared.getShareToken()).build());
+                            .postForLocation(GPHOTOS_API_SHARED_ALBUMS_PATH + ":join", JoinCommand.builder().shareToken(newShared.getShareToken()).build());
                 });
     }
 }

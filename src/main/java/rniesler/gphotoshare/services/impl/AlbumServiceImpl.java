@@ -17,7 +17,6 @@ import java.util.Optional;
 
 @Service
 public class AlbumServiceImpl implements AlbumService {
-    private final String GPHOTOS_API_HOST;
     private final String GPHOTOS_API_SHARED_ALBUMS_PATH;
     private final String GPHOTOS_API_ALBUMS_PATH;
 
@@ -27,12 +26,10 @@ public class AlbumServiceImpl implements AlbumService {
     private final AlbumsRepository albumsRepository;
 
     public AlbumServiceImpl(SecurityService securityService,
-                            @Value("${google.photos.api.host}") String apiHost,
                             @Value("${google.photos.api.albums}") String albumsApiPath,
                             @Value("${google.photos.api.sharedAlbums}") String sharedAlbumsApiPath,
                             AlbumsRepository albumsRepository) {
         this.securityService = securityService;
-        this.GPHOTOS_API_HOST = apiHost;
         this.GPHOTOS_API_SHARED_ALBUMS_PATH = sharedAlbumsApiPath;
         this.GPHOTOS_API_ALBUMS_PATH = albumsApiPath;
         this.albumsRepository = albumsRepository;
@@ -40,7 +37,7 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     public AlbumsList listAlbums(Optional<String> pageToken) {
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString("https://" + GPHOTOS_API_HOST + "/" + GPHOTOS_API_ALBUMS_PATH);
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(GPHOTOS_API_ALBUMS_PATH);
         if (pageToken.isPresent()) {
             uriBuilder.queryParam("pageToken", pageToken.get());
         }
@@ -53,9 +50,9 @@ public class AlbumServiceImpl implements AlbumService {
     public Optional<Album> getAlbum(String albumId) {
         Album album = albumsRepository.findById(albumId)
                 .orElseGet(() -> {
-                    String uri = "https://" + GPHOTOS_API_HOST + "/" + GPHOTOS_API_ALBUMS_PATH + "/" + albumId;
+                    UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(GPHOTOS_API_ALBUMS_PATH + "/${albumId}");
                     return securityService.getOauth2AuthenticatedRestTemplate()
-                            .getForObject(uri, Album.class);
+                            .getForObject(uriComponentsBuilder.buildAndExpand(albumId).toString(), Album.class);
                 });
         return Optional.ofNullable(album);
     }
@@ -75,10 +72,10 @@ public class AlbumServiceImpl implements AlbumService {
         AlbumCommand albumCommand = AlbumCommand.builder().title(name).build();
         CreateAlbumCommand createAlbumCommand = CreateAlbumCommand.builder().album(albumCommand).build();
         RestTemplate restTemplate = securityService.getOauth2AuthenticatedRestTemplate();
-        String uri = "https://" + GPHOTOS_API_HOST + "/" + GPHOTOS_API_ALBUMS_PATH;
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(GPHOTOS_API_ALBUMS_PATH + "/${albumId}:share");
         Album album = restTemplate
-                .postForObject(uri, createAlbumCommand, Album.class);
-        ShareInfo shareInfo = restTemplate.postForObject(uri + "/" + album.getId() + ":share", null, ShareInfo.class);
+                .postForObject(GPHOTOS_API_ALBUMS_PATH, createAlbumCommand, Album.class);
+        ShareInfo shareInfo = restTemplate.postForObject(uriComponentsBuilder.buildAndExpand(album.getId()).toString(), null, ShareInfo.class);
         return shareInfo;
     }
 }

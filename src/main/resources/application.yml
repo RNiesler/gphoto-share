@@ -25,6 +25,5 @@ spring:
 #      uri: mongodb://localhost:27017/gphoto_share
 google:
   photos.api:
-    host: photoslibrary.googleapis.com
-    albums: /v1/albums
-    sharedAlbums: /v1/sharedAlbums
+    albums: https://photoslibrary.googleapis.com/v1/albums
+    sharedAlbums: https://photoslibrary.googleapis.com/v1/sharedAlbums
