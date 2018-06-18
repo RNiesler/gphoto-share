@@ -26,10 +26,8 @@ public class AlbumServiceImpl implements AlbumService {
 
     public AlbumServiceImpl(SecurityService securityService,
                             @Value("${google.photos.api.albums}") String albumsApiPath,
-                            @Value("${google.photos.api.sharedAlbums}") String sharedAlbumsApiPath,
                             AlbumsRepository albumsRepository) {
         this.securityService = securityService;
-        this.GPHOTOS_API_SHARED_ALBUMS_PATH = sharedAlbumsApiPath;
         this.GPHOTOS_API_ALBUMS_PATH = albumsApiPath;
         this.albumsRepository = albumsRepository;
     }
