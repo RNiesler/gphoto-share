@@ -10,6 +10,7 @@ import rniesler.gphotoshare.domain.AlbumsRepository;
 import rniesler.gphotoshare.domain.ShareInfo;
 import rniesler.gphotoshare.domain.googleapi.AlbumCommand;
 import rniesler.gphotoshare.domain.googleapi.CreateAlbumCommand;
+import rniesler.gphotoshare.domain.googleapi.ShareResult;
 import rniesler.gphotoshare.security.SecurityService;
 import rniesler.gphotoshare.services.AlbumService;
 
@@ -47,7 +48,7 @@ public class AlbumServiceImpl implements AlbumService {
     public Optional<Album> getAlbum(String albumId) {
         Album album = albumsRepository.findById(albumId)
                 .orElseGet(() -> {
-                    UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(GPHOTOS_API_ALBUMS_PATH + "/${albumId}");
+                    UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(GPHOTOS_API_ALBUMS_PATH + "/{albumId}");
                     return securityService.getOauth2AuthenticatedRestTemplate()
                             .getForObject(uriComponentsBuilder.buildAndExpand(albumId).toString(), Album.class);
                 });
@@ -69,10 +70,10 @@ public class AlbumServiceImpl implements AlbumService {
         AlbumCommand albumCommand = AlbumCommand.builder().title(name).build();
         CreateAlbumCommand createAlbumCommand = CreateAlbumCommand.builder().album(albumCommand).build();
         RestTemplate restTemplate = securityService.getOauth2AuthenticatedRestTemplate();
-        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(GPHOTOS_API_ALBUMS_PATH + "/${albumId}:share");
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(GPHOTOS_API_ALBUMS_PATH + "/{albumId}:share");
         Album album = restTemplate
                 .postForObject(GPHOTOS_API_ALBUMS_PATH, createAlbumCommand, Album.class);
-        ShareInfo shareInfo = restTemplate.postForObject(uriComponentsBuilder.buildAndExpand(album.getId()).toString(), null, ShareInfo.class);
-        return shareInfo;
+        ShareResult shareResult = restTemplate.postForObject(uriComponentsBuilder.buildAndExpand(album.getId()).toString(), null, ShareResult.class);
+        return shareResult.getShareInfo();
     }
 }

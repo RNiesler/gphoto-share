@@ -41,4 +41,9 @@ public class CircleServiceImpl implements CircleService {
     public Circle persist(Circle circle) {
         return circleRepository.save(circle);
     }
+
+    @Override
+    public void deleteCircle(String id) {
+        circleRepository.deleteById(new ObjectId(id));
+    }
 }

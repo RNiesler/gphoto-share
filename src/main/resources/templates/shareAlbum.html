@@ -2,26 +2,33 @@
 <html th:replace="~{layout :: layout(~{::title}, ~{::section})}"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Spring Security - OAuth 2.0 User Info</title>
+    <title th:text="'Share '+${album.name}">Share album</title>
 </head>
 <body>
-<section>
-    <h1 th:text="${album.name}">Share Album</h1>
-    <div>
-        <img th:src="${album.coverPhotoUrl}"/>
-    </div>
-    <div>
-        <form action="#" th:action="@{'/albums/'+${album.id}+'/share'}" th:object="${shareInfo}" method="post">
-            <label>Shareable URL: </label><input th:field="*{shareableUrl}" type="url"/>
-            <ul>
-                <li th:each="circle : ${circles}">
-                    <input type="checkbox" th:field="*{sharedTo}" th:value="${circle.id}"/>
-                    <label th:for="${#ids.next('sharedTo')}" th:text="${circle.name}">Circle
-                        Name</label>
-                </li>
-            </ul>
-            <input type="submit" value="Share">
-        </form>
+<section class="container">
+    <div class="card col-sm-8">
+        <a th:href="${album.url}" target="_blank"><img class="card-img-top" th:src="${album.coverPhotoUrl}"/></a>
+        <div class="card-body">
+            <h5 class="card-title" th:text="${album.name}"><a th:href="${album.url}" target="_blank">Album name</a></h5>
+            <div class="form-group">
+                <form action="#" th:action="@{'/albums/'+${album.id}+'/share'}" th:object="${shareInfo}" method="post">
+                    <label for="shareUrlInput">Shareable URL: </label>
+                    <input id="shareUrlInput" placeholder="Input public URL" th:field="*{shareableUrl}" type="url"/>
+                    <small id="shareUrlHelp" class="form-text text-muted">The URL must be publicly (and anonymously)
+                        accessible.
+                    </small>
+                    <ul>
+                        <li th:each="circle : ${circles}">
+                            <input type="checkbox" th:field="*{sharedTo}" th:value="${circle.id}"
+                                   class="form-check-input"/>
+                            <label th:for="${#ids.next('sharedTo')}" th:text="${circle.name}"
+                                   class="form-check-label">Circle Name</label>
+                        </li>
+                    </ul>
+                    <input type="submit" value="Share" class="btn btn-primary">
+                </form>
+            </div>
+        </div>
     </div>
 </section>
 </body>

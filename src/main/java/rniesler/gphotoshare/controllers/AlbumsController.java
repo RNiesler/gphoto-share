@@ -33,6 +33,8 @@ public class AlbumsController {
         model.addAttribute("albums", albumsList.getAlbums());
         pageToken.ifPresent(token -> model.addAttribute("pageToken", pageToken));
         model.addAttribute("nextPageToken", albumsList.getNextPageToken());
+        model.addAttribute("shareInfo", new ShareInfo());
+        model.addAttribute("circles", circleService.findAll());
         return "albums";
     }
 

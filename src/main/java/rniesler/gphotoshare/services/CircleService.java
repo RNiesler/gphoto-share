@@ -13,4 +13,6 @@ public interface CircleService {
     Optional<Circle> get(String id);
 
     Circle persist(Circle circle);
+
+    void deleteCircle(String id);
 }

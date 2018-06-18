@@ -42,6 +42,12 @@ public class CircleController {
         return "circle";
     }
 
+    @PostMapping("/{id}/delete")
+    public String deleteCircle(@PathVariable("id") String id) {
+        circleService.deleteCircle(id);
+        return "redirect:/circles";
+    }
+
     @PostMapping("/{id}")
     public String updateMembers(@PathVariable("id") String id, @ModelAttribute Circle circleCommand) {
         circleService.get(id)

@@ -2,24 +2,31 @@
 <html th:replace="~{layout :: layout(~{::title}, ~{::section})}"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Spring Security - OAuth 2.0 User Info</title>
+    <title>User Circles</title>
 </head>
 <body>
-<section>
+<section class="container">
     <div>
-        <span style="font-weight:bold">User Circles:</span>
-        <ul>
-            <li th:each="circle : ${circles}">
-                <a href="circle.html" th:href="@{'/circles/'+${circle.id}}" th:text="${circle.name}">Circle Name</a>
+        <ul class="list-group-flush">
+            <li th:each="circle : ${circles}" class="list-group-item">
+                <form action="#" th:action="@{'/circles/'+${circle.id}+'/delete'}" method="post" class="form-inline">
+                    <a href="circle.html" th:href="@{'/circles/'+${circle.id}}" th:text="${circle.name}">Circle Name</a>
+                    <input type="submit" value="Remove" class="btn btn-primary btn-sm"/>
+                </form>
             </li>
         </ul>
     </div>
-    <div>
-        <form action="#" th:action="@{/circles/}" th:object="${newcircle}" method="post">
-            <p>Name: <input type="text" th:field="*{name}"/></p>
-            <p><input type="submit" value="Create Circle"/> <input type="reset" value="Reset"/></p>
-        </form>
-    </div>
+
+    <h5>New Circle</h5>
+    <form action="#" th:action="@{/circles/}" th:object="${newcircle}" method="post" class="form-inline">
+        <div class="form-group">
+            <input id="circleNameInput" type="text"
+                   th:field="*{name}"
+                   placeholder="New circle name"/>
+        </div>
+        <input type="submit" value="Create Circle" class="btn btn-primary"/>
+        <input type="reset" value="Reset" class="btn-secondary btn"/>
+    </form>
 </section>
 </body>
 </html>
