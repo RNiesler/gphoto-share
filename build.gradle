@@ -33,10 +33,14 @@ dependencies {
     compile('org.springframework.security:spring-security-oauth2-jose')
     compile('org.springframework.boot:spring-boot-starter-thymeleaf')
     compile('org.thymeleaf.extras:thymeleaf-extras-springsecurity4')
-    compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
+    compile('org.springframework.boot:spring-boot-starter-data-mongodb')
+
+    compile('org.webjars:webjars-locator:0.34')
+    compile('org.webjars:bootstrap:4.1.1')
+    compile('org.webjars:jquery:3.3.1-1')
+    compile('org.webjars.npm:popper.js:1.14.3')
+
     testCompile('org.springframework.boot:spring-boot-starter-test')
-
-
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
 }
