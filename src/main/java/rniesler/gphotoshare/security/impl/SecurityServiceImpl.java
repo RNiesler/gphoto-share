@@ -3,6 +3,7 @@ package rniesler.gphotoshare.security.impl;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
@@ -61,6 +62,11 @@ public class SecurityServiceImpl implements SecurityService {
         } else {
             return Collections.emptyMap();
         }
+    }
+
+    @Override
+    public Boolean isAuthenticated() {
+        return !(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken);
     }
 
 

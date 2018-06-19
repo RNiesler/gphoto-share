@@ -20,4 +20,6 @@ public interface SecurityService {
     OAuth2AuthenticationToken retrieveAuthenticationToken();
 
     Map<String, String> retrieveUserInfo(OAuth2AuthenticationToken token);
+
+    Boolean isAuthenticated();
 }

@@ -24,10 +24,12 @@ public class OAuth2LoginSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
+                .antMatchers("/oauth_login/**").permitAll()
                 .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/admin/**").hasRole("ADMIN") //TODO
                 .anyRequest().authenticated()
                 .and()
-                .oauth2Login();
+                .oauth2Login().loginPage("/oauth_login");
     }
 
     @EventListener({AuthenticationSuccessEvent.class, InteractiveAuthenticationSuccessEvent.class})
