@@ -58,7 +58,7 @@ public class AlbumsController {
     @PostMapping("/{id}/share")
     public String shareAlbum(@PathVariable("id") String albumId, @ModelAttribute ShareInfo shareInfo) {
         albumService.shareAlbum(albumId, shareInfo);
-        return "redirect:/albums/" + albumId;
+        return "redirect:/albums";
     }
 
 

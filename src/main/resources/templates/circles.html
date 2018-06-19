@@ -6,10 +6,15 @@
 </head>
 <body>
 <section class="container">
+    <h1>User Circles</h1>
+    <h6>Your circles</h6>
+    <div th:if="${circles==null || circles.size()==0}">
+        <div class="alert alert-primary" role="alert">You have no circles</div>
+    </div>
     <div>
-        <ul class="list-group-flush">
+        <ul class="list-group">
             <li th:each="circle : ${circles}" class="list-group-item">
-                <form action="#" th:action="@{'/circles/'+${circle.id}+'/delete'}" method="post" class="form-inline">
+                <form action="#" th:action="@{'/circles/'+${circle.id}+'/delete'}" method="post" class="form-inline circleform">
                     <a href="circle.html" th:href="@{'/circles/'+${circle.id}}" th:text="${circle.name}">Circle Name</a>
                     <input type="submit" value="Remove" class="btn btn-primary btn-sm"/>
                 </form>
@@ -17,7 +22,7 @@
         </ul>
     </div>
 
-    <h5>New Circle</h5>
+    <h6>New Circle</h6>
     <form action="#" th:action="@{/circles/}" th:object="${newcircle}" method="post" class="form-inline">
         <div class="form-group">
             <input id="circleNameInput" type="text"

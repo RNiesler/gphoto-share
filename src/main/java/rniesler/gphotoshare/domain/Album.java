@@ -18,7 +18,7 @@ public class Album {
     @Id
     private String id;
 
-    //TODO refactor to persist only ShareInfo and keep Album in some cache for max 60minut (baseUrls retention time by Google)
+    //TODO refactor to persist only ShareInfo and keep Album in some cache for max 60minutes (baseUrls retention time by Google)
 
     @Length(min = 1, max = 500) // 500 is the restriction of the Google Photos API
     @JsonProperty("title")
@@ -32,4 +32,6 @@ public class Album {
 
     private ShareInfo shareInfo;
     private Person owner;
+    private String clonedFrom; // id of the album that it was cloned from
+    //TODO don't show the source when clone is present (or implement filters)
 }

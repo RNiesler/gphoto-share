@@ -60,6 +60,7 @@ public class AlbumServiceImpl implements AlbumService {
         return getAlbum(albumId)
                 .map(album -> {
                     album.setShareInfo(shareInfo);
+                    album.setOwner(securityService.getAuthenticatedUser().orElseThrow(RuntimeException::new)); //TODO proper exception
                     return albumsRepository.save(album);
                 });
     }

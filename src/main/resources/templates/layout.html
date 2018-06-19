@@ -10,30 +10,50 @@
           th:href="'/webjars/bootstrap/4.1.1/css/bootstrap.min.css'"
           integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
           crossorigin="anonymous">
+    <style type="text/css">
+        .albumcard .card {
+            padding: 1em;
+            margin: 0.5em;
+            background: #d3d3d333
+        }
+
+        .albumcard .albumcardfooter {
+            text-align: right;
+        }
+
+        .circleform {
+            justify-content: space-between;
+        }
+
+        .navigationrow {
+            background: rgba(0, 104, 255, 0.13);
+            justify-content: space-between;
+            margin-bottom: 1em;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid">
-    <div style="float: right" th:fragment="logout" sec:authorize="isAuthenticated()" class="row">
-        <div style="float:left">
-            <span style="font-weight:bold">User: </span><span
-                th:text="${#authentication.principal.attributes.get('name')}">User Name</span>
-        </div>
-        <div style="float:none">&nbsp;</div>
-        <div style="float:right">
-            <form action="#" th:action="@{/logout}" method="post">
-                <input type="submit" value="Logout" class="btn btn-primary"/>
-            </form>
-        </div>
-    </div>
-    <div th:fragment="navigation" class="row">
+    <div th:fragment="navigation" class="row navigationrow">
         <ul class="nav">
             <li class="nav-item"><a href="index.html" class="nav-link" th:href="@{/}">Home</a></li>
-            <li class="nav-item"><a href="userinfo.html" class="nav-link" th:href="@{/userinfo}">Display User Info</a></li>
             <li class="nav-item"><a href="albums.html" class="nav-link" th:href="@{/albums}">Albums</a></li>
             <li class="nav-item"><a href="circles.html" class="nav-link" th:href="@{/circles}">Circles</a></li>
         </ul>
+        <div th:fragment="logout" sec:authorize="isAuthenticated()">
+        <div class="row">
+            <div class="col-md-auto">
+                <span style="font-weight:bold">User: </span><span
+                    th:text="${#authentication.principal.attributes.get('name')}">User Name</span>
+            </div>
+            <div class="col">
+                <form action="#" th:action="@{/logout}" method="post">
+                    <input type="submit" value="Logout" class="btn btn-primary"/>
+                </form>
+            </div>
+        </div>
+        </div>
     </div>
-    <h1 th:include="${title}" class="row">Page Tile</h1>
     <div class="row">
         <div th:replace="${content}">
             Page Content

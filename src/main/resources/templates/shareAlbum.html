@@ -5,27 +5,36 @@
     <title th:text="'Share '+${album.name}">Share album</title>
 </head>
 <body>
-<section class="container">
+<section class="container albumcard">
+    <h1 th:text="'Share '+${album.name}">Share album</h1>
     <div class="card col-sm-8">
         <a th:href="${album.url}" target="_blank"><img class="card-img-top" th:src="${album.coverPhotoUrl}"/></a>
         <div class="card-body">
             <h5 class="card-title" th:text="${album.name}"><a th:href="${album.url}" target="_blank">Album name</a></h5>
             <div class="form-group">
                 <form action="#" th:action="@{'/albums/'+${album.id}+'/share'}" th:object="${shareInfo}" method="post">
-                    <label for="shareUrlInput">Shareable URL: </label>
-                    <input id="shareUrlInput" placeholder="Input public URL" th:field="*{shareableUrl}" type="url"/>
-                    <small id="shareUrlHelp" class="form-text text-muted">The URL must be publicly (and anonymously)
-                        accessible.
-                    </small>
-                    <ul>
-                        <li th:each="circle : ${circles}">
-                            <input type="checkbox" th:field="*{sharedTo}" th:value="${circle.id}"
-                                   class="form-check-input"/>
-                            <label th:for="${#ids.next('sharedTo')}" th:text="${circle.name}"
-                                   class="form-check-label">Circle Name</label>
-                        </li>
-                    </ul>
-                    <input type="submit" value="Share" class="btn btn-primary">
+                    <div class="form-group">
+                        <label for="shareUrlInput">Shareable URL: </label>
+                        <input id="shareUrlInput" placeholder="Input public URL" th:field="*{shareableUrl}" type="url"
+                               class="form-control form-control-sm"/>
+                        <small id="shareUrlHelp" class="form-text text-muted">The URL must be publicly (and anonymously)
+                            accessible.
+                        </small>
+                    </div>
+                    <div class="form-group form-check">
+                        <h6>User Circles</h6>
+                        <ul>
+                            <li th:each="circle : ${circles}">
+                                <input type="checkbox" th:field="*{sharedTo}" th:value="${circle.id}"
+                                       class="form-check-input"/>
+                                <label th:for="${#ids.next('sharedTo')}" th:text="${circle.name}"
+                                       class="form-check-label">Circle Name</label>
+                            </li>
+                        </ul>
+                    </div>
+                    <input type="submit" value="Share" class="btn btn-primary"/>
+                    <a href="#" class="btn btn-secondary disabled">Clone & Share</a>
+                    <a href="albums.html" class="btn btn-secondary" th:href="@{/albums}">&#8592; Back to albums</a>
                 </form>
             </div>
         </div>

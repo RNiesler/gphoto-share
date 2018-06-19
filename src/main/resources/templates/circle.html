@@ -2,15 +2,21 @@
 <html th:replace="~{layout :: layout(~{::title}, ~{::section})}"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${circle.name}">Circle Name</title>
+    <title th:text="'Circle '+${circle.name}">Circle Name</title>
 </head>
 <body>
 <section class="container">
+    <h1 th:text="'Circle '+${circle.name}">Circle Name</h1>
+    <a href="circle.html" th:href="@{/circles}" class="btn btn-primary">&#8592; Back to circle list</a>
+    <h6>Members</h6>
+    <div class="alert alert-primary" role="alert" th:if="${circle.members==null || circle.members.size()==0}">The circle
+        has no members yet
+    </div>
     <div>
         <ul class="list-group">
             <li th:each="member : ${circle.members}" class="list-group-item">
                 <form action="#" th:action="@{'/circles/'+${circle.id}+'/members/'+${member}}" method="post"
-                      class="form-inline">
+                      class="form-inline circleform">
                     <span th:text="${member}">member@email</span>
                     <input type="submit" class="btn btn-primary btn-sm" value="Remove"/>
                 </form>
@@ -18,7 +24,7 @@
         </ul>
     </div>
 
-    <h5>New Member</h5>
+    <h6>New Member</h6>
     <form action="#" th:action="@{'/circles/'+${circle.id}+'/members'}" th:object="${newMemberCommand}" method="post"
           class="form-inline">
         <input type="email" th:field="*{email}" placeholder="New Member's email"/>
