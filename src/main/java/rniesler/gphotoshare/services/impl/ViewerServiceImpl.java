@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import rniesler.gphotoshare.domain.Album;
 import rniesler.gphotoshare.domain.AlbumsRepository;
-import rniesler.gphotoshare.domain.ShareInfo;
 import rniesler.gphotoshare.domain.googleapi.JoinCommand;
 import rniesler.gphotoshare.security.SecurityService;
 import rniesler.gphotoshare.services.AlbumService;
@@ -39,17 +38,18 @@ public class ViewerServiceImpl implements ViewerService {
                 .findAllByMember(securityService.getAuthenticatedEmail())
                 .stream()
                 .flatMap(circle -> albumsRepository.findAllSharedToCircle(circle.getId()).stream())
+                .distinct()
                 .collect(Collectors.toList());
     }
 
     @Override
     public void joinAlbum(String albumId) {
-        ShareInfo newShared = albumService.createAndShareAlbum("test");
         albumService.getAlbum(albumId)
+                .filter(album -> album.getShareInfo().getShareToken() != null)
                 .ifPresent(album -> {
                     RestTemplate restTemplate = securityService.getOauth2AuthenticatedRestTemplate();
                     restTemplate
-                            .postForLocation(GPHOTOS_API_SHARED_ALBUMS_PATH + ":join", JoinCommand.builder().shareToken(newShared.getShareToken()).build());
+                            .postForLocation(GPHOTOS_API_SHARED_ALBUMS_PATH + ":join", JoinCommand.builder().shareToken(album.getShareInfo().getShareToken()).build());
                 });
     }
 }

@@ -17,7 +17,7 @@ apply plugin: 'io.spring.dependency-management'
 
 group = 'rniesler'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = 1.8
+sourceCompatibility = 1.9
 
 repositories {
     mavenCentral()
@@ -27,6 +27,7 @@ repositories {
 dependencies {
     compileOnly('org.projectlombok:lombok')
     compile('org.springframework.boot:spring-boot-starter-web')
+//    compile('org.springframework.boot:spring-boot-devtools')
 
     compile('org.springframework.security:spring-security-config')
     compile('org.springframework.security:spring-security-oauth2-client')

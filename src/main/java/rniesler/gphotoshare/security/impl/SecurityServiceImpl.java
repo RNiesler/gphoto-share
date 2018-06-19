@@ -14,7 +14,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import rniesler.gphotoshare.domain.Person;
 import rniesler.gphotoshare.security.SecurityService;
-import rniesler.gphotoshare.services.impl.PersonServiceImpl;
+import rniesler.gphotoshare.services.PersonService;
 
 import java.util.Collections;
 import java.util.Map;
@@ -23,9 +23,9 @@ import java.util.Optional;
 @Service
 public class SecurityServiceImpl implements SecurityService {
     private OAuth2AuthorizedClientService authorizedClientService;
-    private final PersonServiceImpl personService;
+    private final PersonService personService;
 
-    public SecurityServiceImpl(OAuth2AuthorizedClientService authorizedClientService, PersonServiceImpl personService) {
+    public SecurityServiceImpl(OAuth2AuthorizedClientService authorizedClientService, PersonService personService) {
         this.authorizedClientService = authorizedClientService;
         this.personService = personService;
     }
