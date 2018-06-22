@@ -5,7 +5,6 @@ logging:
     org.springframework.security: INFO
 #    org.springframework.boot.autoconfigure: DEBUG
 
-
 spring:
   security:
     oauth2:
@@ -19,7 +18,7 @@ spring:
               - profile
               - email
               - https://www.googleapis.com/auth/photoslibrary.readonly  # read albums
-              - https://www.googleapis.com/auth/photoslibrary.sharing   # share & create albums          # read Google+ circles
+              - https://www.googleapis.com/auth/photoslibrary.sharing   # share & create albums
 #  data:
 #    mongodb:
 #      uri: mongodb://localhost:27017/gphoto_share

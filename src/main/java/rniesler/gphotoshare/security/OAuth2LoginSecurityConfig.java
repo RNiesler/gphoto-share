@@ -3,6 +3,7 @@ package rniesler.gphotoshare.security;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
@@ -16,6 +17,7 @@ import rniesler.gphotoshare.services.impl.PersonServiceImpl;
 
 @EnableWebSecurity
 @Slf4j
+@Order(100)
 public class OAuth2LoginSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private PersonServiceImpl personService;
