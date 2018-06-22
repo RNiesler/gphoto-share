@@ -12,6 +12,7 @@ Set the following config vars:
 * SPRING_DATA_MONGODB_URI={proper mongo uri}
 * SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-ID={google api client id}
 * SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-SECRET={google api client secret}
+* SPRING_REDIS_URL={proper redis urls}
 
 In CircleCI:
 * Set the following environment variables
