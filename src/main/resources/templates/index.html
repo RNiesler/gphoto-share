@@ -16,7 +16,7 @@
                     <h5 class="card-title" th:text="${album.name}"><a th:href="${album.publicUrl}"
                                                                       target="_blank">Album name</a>
                     </h5>
-                    <div class="card-text" th:text="'Shared by '+${album.owner.name}">Shared by User</div>
+                    <div class="card-text" th:text="'Shared by '+${album.owner}">Shared by User</div>
                     <div class="albumcardfooter">
                         <a href="#" th:href="@{'/albums/'+${album.id}+'/join'}" class="btn btn-primary"
                            th:if="${album.shareToken}">Join in Google Photos</a>
