@@ -1,6 +1,7 @@
 package rniesler.gphotoshare.services.impl;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -24,6 +25,7 @@ public class AlbumServiceImpl implements AlbumService {
         this.GPHOTOS_API_ALBUMS_PATH = albumsApiPath;
     }
 
+    @Cacheable(cacheNames = "albums", keyGenerator = "userAwareKeyGenerator")
     @Override
     public AlbumsList listAlbums(Optional<String> pageToken) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(GPHOTOS_API_ALBUMS_PATH);
@@ -35,6 +37,7 @@ public class AlbumServiceImpl implements AlbumService {
                 .getForObject(uriBuilder.build().toUriString(), AlbumsList.class);
     }
 
+    @Cacheable("album")
     @Override
     public Optional<GoogleAlbum> getAlbum(String albumId) {
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(GPHOTOS_API_ALBUMS_PATH + "/{albumId}");

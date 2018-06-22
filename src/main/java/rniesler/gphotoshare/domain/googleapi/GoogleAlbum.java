@@ -8,12 +8,14 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 @Document
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GoogleAlbum {
+public class GoogleAlbum implements Serializable {
     @Id
     private String id;
 
