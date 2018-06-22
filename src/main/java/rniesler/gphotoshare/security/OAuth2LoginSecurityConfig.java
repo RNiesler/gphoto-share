@@ -31,6 +31,10 @@ public class OAuth2LoginSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/**").hasRole("ADMIN") //TODO
                 .anyRequest().authenticated()
                 .and()
+                .requiresChannel()
+                .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
+                .requiresSecure()
+                .and()
                 .oauth2Login().loginPage("/oauth_login");
     }
 
