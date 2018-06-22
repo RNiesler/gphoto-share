@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html th:replace="~{layout :: layout(~{::title}, ~{::section})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Shared Albums</title>
+</head>
+<body>
+<section class="container">
+    <h1>My Shared Albums</h1>
+    <div class="row albumcard">
+        <div class="card-columns">
+            <div class="card" th:each="album : ${albums}">
+                <a th:href="${album.publicUrl}" target="_blank"><img class="card-img-top"
+                                                               th:src="${album.coverImgUrl}"/></a>
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${album.name}"><a class="btn btn-primary" th:href="${album.publicUrl}"
+                                                                      target="_blank">Album name</a></h5>
+                </div>
+                <div class="albumcardfooter">
+                    <a href="shareAlbum.html" th:href="@{'/albums/'+${album.id}}" class="btn btn-primary">Sharing Configuration</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" th:if="${albums == null || albums.size()==0}">
+        <div class="alert alert-primary" role="alert">No albums available</div>
+    </div>
+</section>
+</body>
+</html>

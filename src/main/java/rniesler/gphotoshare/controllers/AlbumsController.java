@@ -5,7 +5,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import rniesler.gphotoshare.domain.ShareAlbumCommand;
 import rniesler.gphotoshare.domain.googleapi.AlbumsList;
-import rniesler.gphotoshare.domain.googleapi.ShareInfo;
 import rniesler.gphotoshare.services.AlbumService;
 import rniesler.gphotoshare.services.CircleService;
 import rniesler.gphotoshare.services.SharedAlbumService;
@@ -34,7 +33,6 @@ public class AlbumsController {
         model.addAttribute("albums", albumsList.getAlbums());
         pageToken.ifPresent(token -> model.addAttribute("pageToken", pageToken));
         model.addAttribute("nextPageToken", albumsList.getNextPageToken());
-        model.addAttribute("shareInfo", new ShareInfo());
         return "albums";
     }
 

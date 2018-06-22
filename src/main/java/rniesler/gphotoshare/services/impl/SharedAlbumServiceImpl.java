@@ -43,7 +43,7 @@ public class SharedAlbumServiceImpl implements SharedAlbumService {
             SharedAlbum sharedAlbum = getSharedAlbum(shareCommand.getAlbumId()).orElseGet(() -> {
                 SharedAlbum newSharedAlbum = new SharedAlbum();
                 newSharedAlbum.setId(shareCommand.getAlbumId());
-                newSharedAlbum.setOwner(securityService.getAuthenticatedUser().orElseThrow(RuntimeException::new)); //TODO exception
+                newSharedAlbum.setOwner(securityService.getAuthenticatedEmail());
                 return newSharedAlbum;
             });
             sharedAlbum.setPublicUrl(shareCommand.getPublicUrl());

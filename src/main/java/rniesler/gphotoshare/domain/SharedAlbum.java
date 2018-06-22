@@ -19,7 +19,7 @@ public class SharedAlbum {
     @Id
     private String id;
     private String name;
-    private Person owner;
+    private String owner;
     private String clonedFrom;  // id of the album that it was cloned from
     private String publicUrl;
     private String coverImgUrl; //TODO get bytes
