@@ -12,8 +12,9 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShareInfo {
-    private String shareableUrl;
-    private String shareToken;
+public class ShareAlbumCommand {
+    private String albumId;
     private List<ObjectId> sharedTo;
+    private String publicUrl;
+    private String shareToken;
 }

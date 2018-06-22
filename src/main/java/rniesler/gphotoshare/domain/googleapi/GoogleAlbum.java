@@ -1,11 +1,10 @@
-package rniesler.gphotoshare.domain;
+package rniesler.gphotoshare.domain.googleapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -14,13 +13,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Album {
+public class GoogleAlbum {
     @Id
     private String id;
 
-    //TODO refactor to persist only ShareInfo and keep Album in some cache for max 60minutes (baseUrls retention time by Google)
-
-    @Length(min = 1, max = 500) // 500 is the restriction of the Google Photos API
     @JsonProperty("title")
     private String name;
     @JsonProperty("productUrl")
@@ -31,7 +27,5 @@ public class Album {
     private String coverPhotoUrl;
 
     private ShareInfo shareInfo;
-    private Person owner;
-    private String clonedFrom; // id of the album that it was cloned from
     //TODO don't show the source when clone is present (or implement filters)
 }

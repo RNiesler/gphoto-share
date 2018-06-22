@@ -7,14 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.client.RestTemplate;
-import rniesler.gphotoshare.domain.Album;
-import rniesler.gphotoshare.domain.AlbumsRepository;
 import rniesler.gphotoshare.domain.Circle;
-import rniesler.gphotoshare.domain.ShareInfo;
+import rniesler.gphotoshare.domain.SharedAlbum;
+import rniesler.gphotoshare.domain.SharedAlbumRepository;
 import rniesler.gphotoshare.domain.googleapi.JoinCommand;
 import rniesler.gphotoshare.security.SecurityService;
-import rniesler.gphotoshare.services.AlbumService;
 import rniesler.gphotoshare.services.CircleService;
+import rniesler.gphotoshare.services.SharedAlbumService;
 import rniesler.gphotoshare.services.ViewerService;
 
 import java.util.List;
@@ -28,50 +27,49 @@ public class ViewerServiceImplTest {
     private ViewerService service;
 
     @Mock
-    private AlbumsRepository albumsRepository;
-    @Mock
     private CircleService circleService;
     @Mock
     private SecurityService securityService;
     @Mock
-    private AlbumService albumService;
+    private SharedAlbumRepository sharedAlbumRepository;
+    @Mock
+    private SharedAlbumService sharedAlbumService;
 
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        service = new ViewerServiceImpl(albumsRepository, circleService, securityService, albumService, apiUrl);
+        service = new ViewerServiceImpl(circleService, securityService, apiUrl, sharedAlbumRepository, sharedAlbumService);
     }
 
     @Test
     public void testRetrieveAccessibleAlbums() {
         ObjectId id1 = ObjectId.get();
         ObjectId id2 = ObjectId.get();
-        Album album1 = Album.builder().name("test1").build();
-        Album album2 = Album.builder().name("test2").build();
-        Album album3 = Album.builder().name("test3").build();
+        SharedAlbum album1 = SharedAlbum.builder().name("test1").build();
+        SharedAlbum album2 = SharedAlbum.builder().name("test2").build();
+        SharedAlbum album3 = SharedAlbum.builder().name("test3").build();
         List<Circle> circles = List.of(
                 Circle.builder().id(id1).build(),
                 Circle.builder().id(id2).build()
         );
         when(circleService.findAllByMember(any())).thenReturn(circles);
-        when(albumsRepository.findAllSharedToCircle(id1)).thenReturn(List.of(album1, album2));
-        when(albumsRepository.findAllSharedToCircle(id2)).thenReturn(List.of(album2, album3));
+        when(sharedAlbumRepository.findBySharedToContaining(id1)).thenReturn(List.of(album1, album2));
+        when(sharedAlbumRepository.findBySharedToContaining(id2)).thenReturn(List.of(album2, album3));
 
-        List<Album> result = service.retrieveAccessibleAlbums();
+        List<SharedAlbum> result = service.retrieveAccessibleAlbums();
         Assertions.assertEquals(List.of(album1, album2, album3), result);
         verify(securityService).getAuthenticatedEmail();
         verify(circleService).findAllByMember(any());
-        verify(albumsRepository, times(2)).findAllSharedToCircle(any());
+        verify(sharedAlbumRepository, times(2)).findBySharedToContaining(any());
     }
 
     @Test
     public void testJoinAlbum() {
         String id = "test";
         String testToken = "testToken";
-        ShareInfo testShareInfo = ShareInfo.builder().shareToken(testToken).build();
-        Album testAlbum = Album.builder().name("test").id(id).shareInfo(testShareInfo).build();
-        when(albumService.getAlbum(id)).thenReturn(Optional.of(testAlbum));
+        SharedAlbum testAlbum = SharedAlbum.builder().name("test").id(id).shareToken(testToken).build();
+        when(sharedAlbumService.getSharedAlbum(id)).thenReturn(Optional.of(testAlbum));
         RestTemplate mockRestTemplate = mock(RestTemplate.class);
         when(securityService.getOauth2AuthenticatedRestTemplate()).thenReturn(mockRestTemplate);
         service.joinAlbum("test");

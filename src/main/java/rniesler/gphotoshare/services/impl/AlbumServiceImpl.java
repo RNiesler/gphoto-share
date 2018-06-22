@@ -4,13 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import rniesler.gphotoshare.domain.Album;
-import rniesler.gphotoshare.domain.googleapi.AlbumsList;
-import rniesler.gphotoshare.domain.AlbumsRepository;
-import rniesler.gphotoshare.domain.ShareInfo;
-import rniesler.gphotoshare.domain.googleapi.AlbumCommand;
-import rniesler.gphotoshare.domain.googleapi.CreateAlbumCommand;
-import rniesler.gphotoshare.domain.googleapi.ShareResult;
+import rniesler.gphotoshare.domain.googleapi.*;
 import rniesler.gphotoshare.security.SecurityService;
 import rniesler.gphotoshare.services.AlbumService;
 
@@ -23,14 +17,11 @@ public class AlbumServiceImpl implements AlbumService {
     private final int PAGE_SIZE = 10;
 
     private final SecurityService securityService;
-    private final AlbumsRepository albumsRepository;
 
     public AlbumServiceImpl(SecurityService securityService,
-                            @Value("${google.photos.api.albums}") String albumsApiPath,
-                            AlbumsRepository albumsRepository) {
+                            @Value("${google.photos.api.albums}") String albumsApiPath) {
         this.securityService = securityService;
         this.GPHOTOS_API_ALBUMS_PATH = albumsApiPath;
-        this.albumsRepository = albumsRepository;
     }
 
     @Override
@@ -45,24 +36,11 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public Optional<Album> getAlbum(String albumId) {
-        Album album = albumsRepository.findById(albumId)
-                .orElseGet(() -> {
-                    UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(GPHOTOS_API_ALBUMS_PATH + "/{albumId}");
-                    return securityService.getOauth2AuthenticatedRestTemplate()
-                            .getForObject(uriComponentsBuilder.buildAndExpand(albumId).toString(), Album.class);
-                });
+    public Optional<GoogleAlbum> getAlbum(String albumId) {
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(GPHOTOS_API_ALBUMS_PATH + "/{albumId}");
+        GoogleAlbum album = securityService.getOauth2AuthenticatedRestTemplate()
+                .getForObject(uriComponentsBuilder.buildAndExpand(albumId).toString(), GoogleAlbum.class);
         return Optional.ofNullable(album);
-    }
-
-    @Override
-    public Optional<Album> shareAlbum(final String albumId, final ShareInfo shareInfo) {
-        return getAlbum(albumId)
-                .map(album -> {
-                    album.setShareInfo(shareInfo);
-                    album.setOwner(securityService.getAuthenticatedUser().orElseThrow(RuntimeException::new)); //TODO proper exception
-                    return albumsRepository.save(album);
-                });
     }
 
 
@@ -72,8 +50,8 @@ public class AlbumServiceImpl implements AlbumService {
         CreateAlbumCommand createAlbumCommand = CreateAlbumCommand.builder().album(albumCommand).build();
         RestTemplate restTemplate = securityService.getOauth2AuthenticatedRestTemplate();
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(GPHOTOS_API_ALBUMS_PATH + "/{albumId}:share");
-        Album album = restTemplate
-                .postForObject(GPHOTOS_API_ALBUMS_PATH, createAlbumCommand, Album.class);
+        GoogleAlbum album = restTemplate
+                .postForObject(GPHOTOS_API_ALBUMS_PATH, createAlbumCommand, GoogleAlbum.class);
         ShareResult shareResult = restTemplate.postForObject(uriComponentsBuilder.buildAndExpand(album.getId()).toString(), null, ShareResult.class);
         return shareResult.getShareInfo();
     }
