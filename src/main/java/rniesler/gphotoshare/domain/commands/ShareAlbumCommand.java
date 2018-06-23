@@ -1,4 +1,4 @@
-package rniesler.gphotoshare.domain;
+package rniesler.gphotoshare.domain.commands;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

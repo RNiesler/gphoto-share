@@ -40,19 +40,25 @@
             <li class="nav-item"><a href="albums.html" class="nav-link" th:href="@{/albums}">Albums</a></li>
             <li class="nav-item"><a href="circles.html" class="nav-link" th:href="@{/circles}">Circles</a></li>
             <li class="nav-item"><a href="albums.html" class="nav-link" th:href="@{/shared}">My Shared Albums</a></li>
+            <li class="nav-item dropdown" sec:authorize="hasAuthority('ADMIN')">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button">Admin</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="users.html" th:href="@{/admin/users}">Manage Users</a>
+                </div>
+            </li>
         </ul>
         <div th:fragment="logout" sec:authorize="isAuthenticated()">
-        <div class="row">
-            <div class="col-md-auto">
-                <span style="font-weight:bold">User: </span><span
-                    th:text="${#authentication.principal.attributes.get('name')}">User Name</span>
+            <div class="row">
+                <div class="col-md-auto">
+                    <span style="font-weight:bold">User: </span><span
+                        th:text="${#authentication.principal.attributes.get('name')}">User Name</span>
+                </div>
+                <div class="col">
+                    <form action="#" th:action="@{/logout}" method="post">
+                        <input type="submit" value="Logout" class="btn btn-primary"/>
+                    </form>
+                </div>
             </div>
-            <div class="col">
-                <form action="#" th:action="@{/logout}" method="post">
-                    <input type="submit" value="Logout" class="btn btn-primary"/>
-                </form>
-            </div>
-        </div>
         </div>
     </div>
     <div class="row">
@@ -63,13 +69,13 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        th:src="'/webjars/jquery/3.3.1-1/jquery.min.js'"
+        th:src="@{/webjars/jquery/3.3.1-1/jquery.min.js}"
         crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
-        th:src="'/webjars/popper/1.14.3/popper.min.js'"
+        th:src="@{/webjars/popper.js/1.14.3/dist/umd/popper.min.js}"
         crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
-        th:src="'/webjars/bootstrap/4.1.1/js/bootstrap.min.js'"
+        th:src="@{/webjars/bootstrap/4.1.1/js/bootstrap.min.js}"
         crossorigin="anonymous"></script>
 </body>
 </html>

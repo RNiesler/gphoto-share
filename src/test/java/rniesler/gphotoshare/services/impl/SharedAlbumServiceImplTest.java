@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.client.RestTemplate;
 import rniesler.gphotoshare.domain.Person;
-import rniesler.gphotoshare.domain.ShareAlbumCommand;
+import rniesler.gphotoshare.domain.commands.ShareAlbumCommand;
 import rniesler.gphotoshare.domain.SharedAlbum;
 import rniesler.gphotoshare.domain.SharedAlbumRepository;
 import rniesler.gphotoshare.domain.googleapi.GoogleAlbum;

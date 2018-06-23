@@ -3,7 +3,7 @@ package rniesler.gphotoshare.controllers;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import rniesler.gphotoshare.domain.ShareAlbumCommand;
+import rniesler.gphotoshare.domain.commands.ShareAlbumCommand;
 import rniesler.gphotoshare.domain.googleapi.AlbumsList;
 import rniesler.gphotoshare.services.AlbumService;
 import rniesler.gphotoshare.services.CircleService;

@@ -2,7 +2,7 @@ package rniesler.gphotoshare.services.impl;
 
 import org.bson.types.Binary;
 import org.springframework.stereotype.Service;
-import rniesler.gphotoshare.domain.ShareAlbumCommand;
+import rniesler.gphotoshare.domain.commands.ShareAlbumCommand;
 import rniesler.gphotoshare.domain.SharedAlbum;
 import rniesler.gphotoshare.domain.SharedAlbumRepository;
 import rniesler.gphotoshare.domain.googleapi.GoogleAlbum;

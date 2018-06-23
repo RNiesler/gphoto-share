@@ -1,6 +1,6 @@
 package rniesler.gphotoshare.services;
 
-import rniesler.gphotoshare.domain.ShareAlbumCommand;
+import rniesler.gphotoshare.domain.commands.ShareAlbumCommand;
 import rniesler.gphotoshare.domain.SharedAlbum;
 
 import java.util.List;
