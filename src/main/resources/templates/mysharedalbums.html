@@ -10,7 +10,7 @@
         <div class="card-columns">
             <div class="card" th:each="album : ${albums}">
                 <a th:href="${album.publicUrl}" target="_blank"><img class="card-img-top"
-                                                               th:src="${album.coverImgUrl}"/></a>
+                                                               th:src="*{'data:image/png;base64,'+#conversions.convert(album.coverPhoto.data,'String')}"/></a>
                 <div class="card-body">
                     <h5 class="card-title" th:text="${album.name}"><a class="btn btn-primary" th:href="${album.publicUrl}"
                                                                       target="_blank">Album name</a></h5>

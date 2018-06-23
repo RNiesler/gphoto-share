@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.web.client.RestTemplate;
 import rniesler.gphotoshare.domain.Person;
 import rniesler.gphotoshare.domain.ShareAlbumCommand;
 import rniesler.gphotoshare.domain.SharedAlbum;
@@ -33,6 +34,9 @@ public class SharedAlbumServiceImplTest {
     private SecurityService securityService;
     @Mock
     private AlbumService albumService;
+    @Mock
+    private RestTemplate restTemplate;
+
     private final static String TEST_EMAIL = "test@email";
 
     @BeforeEach
@@ -40,6 +44,7 @@ public class SharedAlbumServiceImplTest {
         MockitoAnnotations.initMocks(this);
         service = new SharedAlbumServiceImpl(sharedAlbumRepository, securityService, albumService);
         when(securityService.getAuthenticatedEmail()).thenReturn(TEST_EMAIL);
+        when(securityService.getOauth2AuthenticatedRestTemplate()).thenReturn(restTemplate);
     }
 
     @Test
@@ -120,6 +125,7 @@ public class SharedAlbumServiceImplTest {
 
         GoogleAlbum album = GoogleAlbum.builder().id(testId).coverPhotoUrl(url).name(name).build();
         when(albumService.getAlbum(testId)).thenReturn(Optional.of(album));
+        when(restTemplate.getForObject(url, byte[].class)).thenReturn(new byte[] {0,0});
 
         service.shareAlbum(command);
         ArgumentCaptor<SharedAlbum> captor = ArgumentCaptor.forClass(SharedAlbum.class);
@@ -128,7 +134,8 @@ public class SharedAlbumServiceImplTest {
         assertEquals(command.getPublicUrl(), captor.getValue().getPublicUrl());
         assertEquals(command.getSharedTo(), captor.getValue().getSharedTo());
         assertEquals(album.getName(), captor.getValue().getName());
-        assertEquals(album.getCoverPhotoUrl(), captor.getValue().getCoverImgUrl());
+        assertNotNull(captor.getValue().getCoverPhoto());
+        verify(restTemplate).getForObject(url, byte[].class); // called for image
     }
 
     @Test
@@ -146,6 +153,7 @@ public class SharedAlbumServiceImplTest {
         GoogleAlbum album = GoogleAlbum.builder().id(testId).coverPhotoUrl(url).name(name).shareInfo(shareInfo).build();
         when(albumService.getAlbum(testId)).thenReturn(Optional.of(album));
         when(securityService.getAuthenticatedUser()).thenReturn(Optional.of(new Person()));
+        when(restTemplate.getForObject(url, byte[].class)).thenReturn(new byte[] {0,0});
 
         service.shareAlbum(command);
         ArgumentCaptor<SharedAlbum> captor = ArgumentCaptor.forClass(SharedAlbum.class);
@@ -154,7 +162,8 @@ public class SharedAlbumServiceImplTest {
         assertEquals(command.getPublicUrl(), captor.getValue().getPublicUrl());
         assertEquals(command.getSharedTo(), captor.getValue().getSharedTo());
         assertEquals(album.getName(), captor.getValue().getName());
-        assertEquals(album.getCoverPhotoUrl(), captor.getValue().getCoverImgUrl());
+        assertNotNull(captor.getValue().getCoverPhoto());
+        verify(restTemplate).getForObject(url, byte[].class); // called for image
     }
 
     @Test
@@ -178,12 +187,15 @@ public class SharedAlbumServiceImplTest {
     @Test
     public void testShareWithEmptyToken() {
         String token = "";
+        String photoUrl = "url";
         List<ObjectId> sharedTo = List.of(new ObjectId());
         ShareAlbumCommand command = ShareAlbumCommand.builder().sharedTo(sharedTo).shareToken(token).build();
         SharedAlbum sharedAlbum = SharedAlbum.builder().sharedTo(Collections.emptyList()).shareToken("wrong token").build();
         when(sharedAlbumRepository.findById(any())).thenReturn(Optional.of(sharedAlbum));
 
-        when(albumService.getAlbum(any())).thenReturn(Optional.of(new GoogleAlbum()));
+        GoogleAlbum googleAlbum = GoogleAlbum.builder().coverPhotoUrl(photoUrl).build();
+        when(albumService.getAlbum(any())).thenReturn(Optional.of(googleAlbum));
+        when(restTemplate.getForObject(photoUrl, byte[].class)).thenReturn(new byte[] {0,0});
 
         service.shareAlbum(command);
         ArgumentCaptor<SharedAlbum> captor = ArgumentCaptor.forClass(SharedAlbum.class);

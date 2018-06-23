@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -22,9 +23,8 @@ public class SharedAlbum {
     private String owner;
     private String clonedFrom;  // id of the album that it was cloned from
     private String publicUrl;
-    private String coverImgUrl; //TODO get bytes
-    //    private byte[] coverImg;
     private List<ObjectId> sharedTo; // ids of circles
     private String shareToken;
+    private Binary coverPhoto;
 
 }

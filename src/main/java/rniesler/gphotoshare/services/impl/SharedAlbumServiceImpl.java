@@ -1,5 +1,6 @@
 package rniesler.gphotoshare.services.impl;
 
+import org.bson.types.Binary;
 import org.springframework.stereotype.Service;
 import rniesler.gphotoshare.domain.ShareAlbumCommand;
 import rniesler.gphotoshare.domain.SharedAlbum;
@@ -55,12 +56,16 @@ public class SharedAlbumServiceImpl implements SharedAlbumService {
             }
             albumService.getAlbum(shareCommand.getAlbumId()).ifPresentOrElse((googleAlbum) -> {
                 sharedAlbum.setName(googleAlbum.getName());
-                sharedAlbum.setCoverImgUrl(googleAlbum.getCoverPhotoUrl()); //TODO bytes
+                sharedAlbum.setCoverPhoto(new Binary(getContents(googleAlbum.getCoverPhotoUrl())));
             }, () -> {
                 throw new RuntimeException();
             });
             sharedAlbumRepository.save(sharedAlbum);
         }
+    }
+
+    protected byte[] getContents(String url) {
+        return securityService.getOauth2AuthenticatedRestTemplate().getForObject(url, byte[].class);
     }
 
     @Override
