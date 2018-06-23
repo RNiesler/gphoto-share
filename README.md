@@ -13,6 +13,7 @@ Set the following config vars:
 * SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-ID={google api client id}
 * SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-SECRET={google api client secret}
 * SPRING_REDIS_URL={proper redis urls}
+* APP_ADMIN_EMAIL={email}
 
 In CircleCI:
 * Set the following environment variables

@@ -48,7 +48,6 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public OAuth2AuthenticationToken retrieveAuthenticationToken() {
-        //TODO error checking
         return (OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
     }
 
