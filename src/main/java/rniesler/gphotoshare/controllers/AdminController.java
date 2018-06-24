@@ -22,7 +22,7 @@ public class AdminController {
     public String listUsers(Model model) {
         model.addAttribute("users", securityMappingService.listAllowedUsers());
         model.addAttribute("newuser", new SecurityMapping());
-        return "users";
+        return "listusers";
     }
 
     @PostMapping("/users")

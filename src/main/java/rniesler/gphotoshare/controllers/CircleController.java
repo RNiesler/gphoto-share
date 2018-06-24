@@ -26,7 +26,7 @@ public class CircleController {
     public String listCircles(Model model) {
         model.addAttribute("circles", circleService.findAll());
         model.addAttribute("newcircle", new Circle());
-        return "circles";
+        return "circlelist";
     }
 
     @PostMapping({"", "/"})
@@ -73,8 +73,8 @@ public class CircleController {
         return "redirect:/circles/" + circleId;
     }
 
-    @PostMapping("/{id}/members")
-    public String addMember(@PathVariable("id") String circleId, @ModelAttribute Person newMember) {
+    @PostMapping("/{circleId}/members")
+    public String addMember(@PathVariable("circleId") String circleId, @ModelAttribute Person newMember) {
         circleService.get(circleId)
                 .ifPresentOrElse(circle -> {
                     if (circle.getMembers() == null) {

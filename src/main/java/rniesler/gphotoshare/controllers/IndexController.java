@@ -19,9 +19,10 @@ public class IndexController {
     }
 
     @GetMapping("/")
-    public String index(Model model, OAuth2AuthenticationToken authentication) {
-        OAuth2AuthorizedClient authorizedClient = securityService.getAuthorizedClient(authentication);
-        model.addAttribute("userName", authentication.getName());
+    public String index(Model model) {
+        OAuth2AuthenticationToken authenticationToken = securityService.retrieveAuthenticationToken();
+        OAuth2AuthorizedClient authorizedClient = securityService.getAuthorizedClient(authenticationToken);
+        model.addAttribute("userName", authenticationToken.getName());
         model.addAttribute("clientName", authorizedClient.getClientRegistration().getClientName());
         model.addAttribute("albums", viewerService.retrieveAccessibleAlbums());
         return "index";

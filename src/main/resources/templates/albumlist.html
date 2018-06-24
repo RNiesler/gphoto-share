@@ -9,11 +9,11 @@
     <ul class="pagination">
 
         <li class="page-item" th:if="${pageToken}"><a class="page-link" th:href="@{/albums}"
-                                                      href="albums.html">First</a>
+                                                      href="albumlist.html">First</a>
         </li>
         <li class="page-item" th:if="${nextPageToken}"><a class="page-link"
                                                           th:href="@{/albums(nextPageToken=${nextPageToken})}"
-                                                          href="albums.html">Next</a>
+                                                          href="albumlist.html">Next</a>
         </li>
     </ul>
     <div class="row albumcard">

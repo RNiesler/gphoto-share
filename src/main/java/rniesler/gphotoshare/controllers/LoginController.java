@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import rniesler.gphotoshare.security.SecurityService;
 
-import javax.servlet.ServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +29,7 @@ public class LoginController {
     }
 
     @GetMapping({"", "/"})
-    public String login(Model model, ServletRequest request) {
+    public String login(Model model) {
         if (securityService.isAuthenticated()) {
             return "redirect:/";
         } else {
