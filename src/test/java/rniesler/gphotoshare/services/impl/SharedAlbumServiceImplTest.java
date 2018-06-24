@@ -186,10 +186,11 @@ public class SharedAlbumServiceImplTest {
 
     @Test
     public void testShareWithEmptyToken() {
+        String testId = "test";
         String token = "";
         String photoUrl = "url";
         List<ObjectId> sharedTo = List.of(new ObjectId());
-        ShareAlbumCommand command = ShareAlbumCommand.builder().sharedTo(sharedTo).shareToken(token).build();
+        ShareAlbumCommand command = ShareAlbumCommand.builder().albumId(testId).sharedTo(sharedTo).shareToken(token).build();
         SharedAlbum sharedAlbum = SharedAlbum.builder().sharedTo(Collections.emptyList()).shareToken("wrong token").build();
         when(sharedAlbumRepository.findById(any())).thenReturn(Optional.of(sharedAlbum));
 
