@@ -45,6 +45,12 @@ dependencies {
     compile('org.webjars.npm:popper.js:1.14.3')
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.0'
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.1.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
+}
+
+test {
+    useJUnitPlatform()
 }
