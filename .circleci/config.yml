@@ -39,7 +39,7 @@ jobs:
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
       # run tests!
-      - run: gradle test
+      - run: gradle test jacocoTestReport
       - run:
           name: Save test results
           command: |
@@ -50,6 +50,10 @@ jobs:
           path: ~/junit
       - store_artifacts:
           path: ~/junit
+      # CodeCov coverage
+      - run:
+          name: Send to CodeCov
+          command: bash <(curl -s https://codecov.io/bash)
   deploy:
     docker:
       - image: buildpack-deps:trusty
