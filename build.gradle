@@ -46,6 +46,7 @@ dependencies {
     compile('org.webjars.npm:popper.js:1.14.3')
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('org.springframework.security:spring-security-test')
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.0'
     testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.1.0'

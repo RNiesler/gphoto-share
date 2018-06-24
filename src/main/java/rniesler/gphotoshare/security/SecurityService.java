@@ -5,7 +5,6 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.web.client.RestTemplate;
 import rniesler.gphotoshare.domain.Person;
 
-import java.util.Map;
 import java.util.Optional;
 
 public interface SecurityService {
@@ -18,8 +17,6 @@ public interface SecurityService {
     String getAuthenticatedEmail();
 
     OAuth2AuthenticationToken retrieveAuthenticationToken();
-
-    Map<String, String> retrieveUserInfo(OAuth2AuthenticationToken token);
 
     Boolean isAuthenticated();
 }

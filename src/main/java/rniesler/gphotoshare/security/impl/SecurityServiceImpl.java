@@ -4,31 +4,31 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import rniesler.gphotoshare.domain.Person;
 import rniesler.gphotoshare.exceptions.AuthenticationRequiredException;
 import rniesler.gphotoshare.security.SecurityService;
 import rniesler.gphotoshare.services.PersonService;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class SecurityServiceImpl implements SecurityService {
     private OAuth2AuthorizedClientService authorizedClientService;
     private final PersonService personService;
+    private final RestTemplateBuilder restTemplateBuilder;
 
-    public SecurityServiceImpl(OAuth2AuthorizedClientService authorizedClientService, PersonService personService) {
+    public SecurityServiceImpl(OAuth2AuthorizedClientService authorizedClientService, PersonService personService, RestTemplateBuilder restTemplateBuilder) {
         this.authorizedClientService = authorizedClientService;
         this.personService = personService;
+        this.restTemplateBuilder = restTemplateBuilder;
     }
 
     @Override
@@ -53,19 +53,8 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public OAuth2AuthenticationToken retrieveAuthenticationToken() {
-        return (OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-    }
-
-    @Override
-    public Map<String, String> retrieveUserInfo(OAuth2AuthenticationToken token) {
-        String userInfoEndpointUri = getAuthorizedClient(token).getClientRegistration()
-                .getProviderDetails().getUserInfoEndpoint().getUri();
-        if (!StringUtils.isEmpty(userInfoEndpointUri)) {    // userInfoEndpointUri is optional for OIDC Clients
-            return getOauth2AuthenticatedRestTemplate()
-                    .getForObject(userInfoEndpointUri, Map.class);
-        } else {
-            return Collections.emptyMap();
-        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication instanceof OAuth2AuthenticationToken ? (OAuth2AuthenticationToken) authentication : null;
     }
 
     @Override
@@ -73,19 +62,19 @@ public class SecurityServiceImpl implements SecurityService {
         return !(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken);
     }
 
-
+    @Override
     public RestTemplate getOauth2AuthenticatedRestTemplate() {
         OAuth2AuthenticationToken token = retrieveAuthenticationToken();
         if (token == null) {
             throw new AuthenticationRequiredException();
         }
         OAuth2AuthorizedClient authorizedClient = getAuthorizedClient(token);
-        RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
-        restTemplateBuilder.errorHandler(new GoogleApiResponseErrorHandler());
-        restTemplateBuilder = restTemplateBuilder.interceptors((ClientHttpRequestInterceptor) (request, body, execution) -> {
-            request.getHeaders().set(HttpHeaders.AUTHORIZATION, "Bearer " + authorizedClient.getAccessToken().getTokenValue());
-            return execution.execute(request, body);
-        });
-        return restTemplateBuilder.build();
+        return restTemplateBuilder
+                .errorHandler(new GoogleApiResponseErrorHandler())
+                .interceptors((ClientHttpRequestInterceptor) (request, body, execution) -> {
+                    request.getHeaders().set(HttpHeaders.AUTHORIZATION, "Bearer " + authorizedClient.getAccessToken().getTokenValue());
+                    return execution.execute(request, body);
+                })
+                .build();
     }
 }
