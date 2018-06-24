@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/RNiesler/gphoto-share.svg?style=svg)](https://circleci.com/gh/RNiesler/gphoto-share)
+
 In Google API Console (https://console.developers.google.com/apis/dashboard):
 * Create project
 * Enable Photos Library API
