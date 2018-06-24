@@ -1,5 +1,7 @@
 package rniesler.gphotoshare.controllers;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,23 +10,31 @@ import rniesler.gphotoshare.exceptions.AuthenticationRequiredException;
 import rniesler.gphotoshare.exceptions.ResourceNotFoundException;
 
 @ControllerAdvice
+@Slf4j
 public class ExceptionHandlingAdvice {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleNotFound() {
+    public String handleNotFound(ResourceNotFoundException ex) {
+        log.error("Couldn't find a resource " + ex.getMessage());
         return "errors/404";
     }
 
     @ExceptionHandler(AuthenticationRequiredException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public String handleNotAuthenticated() {
+        log.error("Tried to use Security method while not authenticated.");
         return "errors/accessDenied";
     }
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleInternalError() {
+    public String handleInternalError(RuntimeException ex) {
+        log.error("Exception caught: " + ex.getMessage());
+        // If the exception is annotated with @ResponseStatus rethrow it and let
+        if (AnnotationUtils.findAnnotation(ex.getClass(), ResponseStatus.class) != null) {
+            throw ex;
+        }
         return "errors/500";
     }
 
