@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/RNiesler/gphoto-share.svg?style=svg)](https://circleci.com/gh/RNiesler/gphoto-share)
+[![codecov](https://codecov.io/gh/RNiesler/gphoto-share/branch/master/graph/badge.svg)](https://codecov.io/gh/RNiesler/gphoto-share)
 
 In Google API Console (https://console.developers.google.com/apis/dashboard):
 * Create project
