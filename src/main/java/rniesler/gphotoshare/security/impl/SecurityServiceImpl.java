@@ -81,6 +81,7 @@ public class SecurityServiceImpl implements SecurityService {
         }
         OAuth2AuthorizedClient authorizedClient = getAuthorizedClient(token);
         RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
+        restTemplateBuilder.errorHandler(new GoogleApiResponseErrorHandler());
         restTemplateBuilder = restTemplateBuilder.interceptors((ClientHttpRequestInterceptor) (request, body, execution) -> {
             request.getHeaders().set(HttpHeaders.AUTHORIZATION, "Bearer " + authorizedClient.getAccessToken().getTokenValue());
             return execution.execute(request, body);

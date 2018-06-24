@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import rniesler.gphotoshare.exceptions.AuthenticationRequiredException;
 import rniesler.gphotoshare.exceptions.ResourceNotFoundException;
+import rniesler.gphotoshare.security.impl.GoogleApiException;
 
 @ControllerAdvice
 @Slf4j
@@ -26,6 +27,14 @@ public class ExceptionHandlingAdvice {
         log.error("Tried to use Security method while not authenticated.");
         return "errors/accessDenied";
     }
+
+    @ExceptionHandler(GoogleApiException.class)
+    @ResponseStatus(HttpStatus.OK)
+    public String handleGoogleApiException(GoogleApiException ex) {
+        log.error("Exception while calling Google Photos API. Response status: " + ex.getStatus() + ". Message: " + ex.getMessage());
+        return "errors/apiCallError";
+    }
+
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
