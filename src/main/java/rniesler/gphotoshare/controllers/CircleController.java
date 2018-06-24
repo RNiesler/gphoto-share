@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import rniesler.gphotoshare.domain.Circle;
 import rniesler.gphotoshare.domain.Person;
+import rniesler.gphotoshare.exceptions.CircleNotFoundException;
 import rniesler.gphotoshare.security.SecurityService;
 import rniesler.gphotoshare.services.CircleService;
 
@@ -37,7 +38,7 @@ public class CircleController {
 
     @GetMapping("/{id}")
     public String getCircle(@PathVariable("id") String id, Model model) {
-        model.addAttribute("circle", circleService.get(id).orElseThrow(RuntimeException::new)); //TODO exception
+        model.addAttribute("circle", circleService.get(id).orElseThrow(CircleNotFoundException::new));
         model.addAttribute("newMemberCommand", new Person());
         return "circle";
     }
@@ -50,11 +51,12 @@ public class CircleController {
 
     @PostMapping("/{id}")
     public String updateMembers(@PathVariable("id") String id, @ModelAttribute Circle circleCommand) {
-        circleService.get(id)
-                .ifPresent(circle -> {
-                    circle.setMembers(circleCommand.getMembers());
-                    circleService.persist(circle);
-                });
+        circleService.get(id).ifPresentOrElse(circle -> {
+            circle.setMembers(circleCommand.getMembers());
+            circleService.persist(circle);
+        }, () -> {
+            throw new CircleNotFoundException();
+        });
         return "redirect:/circles/" + id;
 
     }
@@ -62,9 +64,11 @@ public class CircleController {
     @PostMapping("/{id}/members/{member}")
     public String removeMember(@PathVariable("id") String circleId, @PathVariable("member") String memberEmail) {
         circleService.get(circleId)
-                .ifPresent(circle -> {
+                .ifPresentOrElse(circle -> {
                     circle.getMembers().remove(memberEmail);
                     circleService.persist(circle);
+                }, () -> {
+                    throw new CircleNotFoundException();
                 });
         return "redirect:/circles/" + circleId;
     }
@@ -72,12 +76,14 @@ public class CircleController {
     @PostMapping("/{id}/members")
     public String addMember(@PathVariable("id") String circleId, @ModelAttribute Person newMember) {
         circleService.get(circleId)
-                .ifPresent(circle -> {
+                .ifPresentOrElse(circle -> {
                     if (circle.getMembers() == null) {
                         circle.setMembers(new LinkedList<>());
                     }
                     circle.getMembers().add(newMember.getEmail());
                     circleService.persist(circle);
+                }, () -> {
+                    throw new CircleNotFoundException();
                 });
         return "redirect:/circles/" + circleId;
     }

@@ -6,6 +6,7 @@ import rniesler.gphotoshare.domain.commands.ShareAlbumCommand;
 import rniesler.gphotoshare.domain.SharedAlbum;
 import rniesler.gphotoshare.domain.SharedAlbumRepository;
 import rniesler.gphotoshare.domain.googleapi.GoogleAlbum;
+import rniesler.gphotoshare.exceptions.AlbumNotFoundException;
 import rniesler.gphotoshare.security.SecurityService;
 import rniesler.gphotoshare.services.AlbumService;
 import rniesler.gphotoshare.services.SharedAlbumService;
@@ -37,7 +38,9 @@ public class SharedAlbumServiceImpl implements SharedAlbumService {
 
     @Override
     public void shareAlbum(ShareAlbumCommand shareCommand) {
-        //TODO validation: id not null
+        if (shareCommand.getAlbumId() == null) {
+            throw new IllegalArgumentException("Album ID cannot be null");
+        }
         if (shareCommand.getSharedTo().isEmpty()) {
             sharedAlbumRepository.deleteById(shareCommand.getAlbumId());
         } else {
@@ -58,7 +61,7 @@ public class SharedAlbumServiceImpl implements SharedAlbumService {
                 sharedAlbum.setName(googleAlbum.getName());
                 sharedAlbum.setCoverPhoto(new Binary(getContents(googleAlbum.getCoverPhotoUrl())));
             }, () -> {
-                throw new RuntimeException();
+                throw new AlbumNotFoundException();
             });
             sharedAlbumRepository.save(sharedAlbum);
         }
@@ -70,7 +73,7 @@ public class SharedAlbumServiceImpl implements SharedAlbumService {
 
     @Override
     public ShareAlbumCommand getShareAlbumCommand(String id) {
-        GoogleAlbum album = albumService.getAlbum(id).orElseThrow(RuntimeException::new); //TODO exception
+        GoogleAlbum album = albumService.getAlbum(id).orElseThrow(AlbumNotFoundException::new);
         Optional<SharedAlbum> sharedAlbumOptional = getSharedAlbum(id);
         ShareAlbumCommand shareAlbumCommand = new ShareAlbumCommand();
         shareAlbumCommand.setAlbumId(id);

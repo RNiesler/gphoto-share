@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import rniesler.gphotoshare.domain.commands.ShareAlbumCommand;
 import rniesler.gphotoshare.domain.googleapi.AlbumsList;
+import rniesler.gphotoshare.exceptions.AlbumNotFoundException;
 import rniesler.gphotoshare.services.AlbumService;
 import rniesler.gphotoshare.services.CircleService;
 import rniesler.gphotoshare.services.SharedAlbumService;
@@ -38,7 +39,7 @@ public class AlbumsController {
 
     @GetMapping("/{id}")
     public String getAlbum(@PathVariable("id") String id, Model model) {
-        model.addAttribute("album", albumService.getAlbum(id).orElseThrow(RuntimeException::new));
+        model.addAttribute("album", albumService.getAlbum(id).orElseThrow(AlbumNotFoundException::new));
         model.addAttribute("shareCommand", sharedAlbumService.getShareAlbumCommand(id));
         model.addAttribute("circles", circleService.findAll());
         return "shareAlbum";

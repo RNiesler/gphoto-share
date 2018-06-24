@@ -6,6 +6,7 @@ import org.springframework.web.client.RestTemplate;
 import rniesler.gphotoshare.domain.SharedAlbum;
 import rniesler.gphotoshare.domain.SharedAlbumRepository;
 import rniesler.gphotoshare.domain.googleapi.JoinCommand;
+import rniesler.gphotoshare.exceptions.AlbumNotFoundException;
 import rniesler.gphotoshare.security.SecurityService;
 import rniesler.gphotoshare.services.CircleService;
 import rniesler.gphotoshare.services.SharedAlbumService;
@@ -46,10 +47,12 @@ public class ViewerServiceImpl implements ViewerService {
     public void joinAlbum(String albumId) {
         sharedAlbumService.getSharedAlbum(albumId)
                 .filter(album -> album.getShareToken() != null)
-                .ifPresent(album -> {
+                .ifPresentOrElse(album -> {
                     RestTemplate restTemplate = securityService.getOauth2AuthenticatedRestTemplate();
                     restTemplate
                             .postForLocation(GPHOTOS_API_SHARED_ALBUMS_PATH + ":join", JoinCommand.builder().shareToken(album.getShareToken()).build());
+                }, () -> {
+                    throw new AlbumNotFoundException();
                 });
     }
 }

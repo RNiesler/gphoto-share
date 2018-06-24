@@ -36,6 +36,6 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Set<String> getPersonAuthorities(String email) {
-        return securityMappingRepository.findById(email).map(SecurityMapping::getAuthorities).orElseGet(() -> Collections.emptySet());
+        return securityMappingRepository.findById(email).map(SecurityMapping::getAuthorities).orElse(Collections.emptySet());
     }
 }

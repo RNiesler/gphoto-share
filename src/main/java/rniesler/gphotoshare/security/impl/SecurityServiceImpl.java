@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import rniesler.gphotoshare.domain.Person;
+import rniesler.gphotoshare.exceptions.AuthenticationRequiredException;
 import rniesler.gphotoshare.security.SecurityService;
 import rniesler.gphotoshare.services.PersonService;
 
@@ -43,7 +44,11 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public String getAuthenticatedEmail() {
-        return ((OidcUser) retrieveAuthenticationToken().getPrincipal()).getEmail();
+        OAuth2AuthenticationToken token = retrieveAuthenticationToken();
+        if (token == null) {
+            throw new AuthenticationRequiredException();
+        }
+        return ((OidcUser) token.getPrincipal()).getEmail();
     }
 
     @Override
@@ -70,7 +75,11 @@ public class SecurityServiceImpl implements SecurityService {
 
 
     public RestTemplate getOauth2AuthenticatedRestTemplate() {
-        OAuth2AuthorizedClient authorizedClient = getAuthorizedClient(retrieveAuthenticationToken());
+        OAuth2AuthenticationToken token = retrieveAuthenticationToken();
+        if (token == null) {
+            throw new AuthenticationRequiredException();
+        }
+        OAuth2AuthorizedClient authorizedClient = getAuthorizedClient(token);
         RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
         restTemplateBuilder = restTemplateBuilder.interceptors((ClientHttpRequestInterceptor) (request, body, execution) -> {
             request.getHeaders().set(HttpHeaders.AUTHORIZATION, "Bearer " + authorizedClient.getAccessToken().getTokenValue());
