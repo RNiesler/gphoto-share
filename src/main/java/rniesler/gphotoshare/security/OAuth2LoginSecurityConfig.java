@@ -31,6 +31,7 @@ public class OAuth2LoginSecurityConfig extends WebSecurityConfigurerAdapter {
                 .oauth2Login()
                 .userInfoEndpoint().oidcUserService(userService)
                 .and()
-                .loginPage("/oauth_login");
+                .loginPage("/oauth_login")
+                .and().exceptionHandling().accessDeniedPage("/errors/accessDenied");
     }
 }
