@@ -30,20 +30,25 @@
             justify-content: space-between;
             margin-bottom: 1em;
         }
-        
+
         .access-request-line form {
             display: inline;
+        }
+
+        #logout {
+            margin-left: 1em;
         }
     </style>
 </head>
 <body>
 <div class="container-fluid">
-    <div th:fragment="navigation" class="row navigationrow">
-        <ul class="nav">
+    <div th:fragment="navigation" class="navigationrow navbar navbar-expand-lg">
+        <ul class="navbar-nav">
             <li class="nav-item"><a href="index.html" class="nav-link" th:href="@{/}">Home</a></li>
             <li class="nav-item"><a href="albumlist.html" class="nav-link" th:href="@{/albums}">Albums</a></li>
             <li class="nav-item"><a href="circlelist.html" class="nav-link" th:href="@{/circles}">Circles</a></li>
-            <li class="nav-item"><a href="albumlist.html" class="nav-link" th:href="@{/shared}">My Shared Albums</a></li>
+            <li class="nav-item"><a href="albumlist.html" class="nav-link" th:href="@{/shared}">My Shared Albums</a>
+            </li>
             <li class="nav-item dropdown" sec:authorize="hasAuthority('ADMIN')">
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button">Admin</a>
                 <div class="dropdown-menu">
@@ -52,17 +57,11 @@
             </li>
         </ul>
         <div th:fragment="logout" sec:authorize="isAuthenticated()">
-            <div class="row">
-                <div class="col-md-auto">
-                    <span style="font-weight:bold">User: </span><span
-                        th:text="${#authentication.principal.attributes.get('name')}">User Name</span>
-                </div>
-                <div class="col">
-                    <form action="#" th:action="@{/logout}" method="post">
-                        <input type="submit" value="Logout" class="btn btn-primary"/>
-                    </form>
-                </div>
-            </div>
+            <form action="#" th:action="@{/logout}" method="post" class="form-inline">
+                <span><strong>User: </strong></span><span
+                    th:text="${#authentication.principal.attributes.get('name')}">User Name</span>
+                <input type="submit" value="Logout" id="logout" class="btn btn-primary"/>
+            </form>
         </div>
     </div>
     <div class="row">
