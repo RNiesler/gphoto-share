@@ -2,6 +2,7 @@ package rniesler.gphotoshare.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import rniesler.gphotoshare.domain.commands.ShareAlbumCommand;
 import rniesler.gphotoshare.domain.googleapi.AlbumsList;
@@ -11,6 +12,7 @@ import rniesler.gphotoshare.services.CircleService;
 import rniesler.gphotoshare.services.SharedAlbumService;
 import rniesler.gphotoshare.services.ViewerService;
 
+import javax.validation.Valid;
 import java.util.Optional;
 
 @Controller
@@ -39,16 +41,26 @@ public class AlbumsController {
 
     @GetMapping("/{id}")
     public String getAlbum(@PathVariable("id") String id, Model model) {
-        model.addAttribute("album", albumService.getAlbum(id).orElseThrow(AlbumNotFoundException::new));
+        String view = setAlbumModel(id, model);
         model.addAttribute("shareCommand", sharedAlbumService.getShareAlbumCommand(id));
-        model.addAttribute("circles", circleService.findAll());
-        return "shareAlbum";
+        return view;
     }
 
-    @PostMapping("/{id}/share")
-    public String shareAlbum(@PathVariable("id") String albumId, @ModelAttribute ShareAlbumCommand shareAlbumCommand) {
-        sharedAlbumService.shareAlbum(shareAlbumCommand);
-        return "redirect:/albums";
+    private String setAlbumModel(String id, Model model) {
+        model.addAttribute("album", albumService.getAlbum(id).orElseThrow(AlbumNotFoundException::new));
+        model.addAttribute("circles", circleService.findAll());
+        return "shareAlbum";
+
+    }
+
+    @PostMapping("/{id}")
+    public String shareAlbum(@PathVariable("id") String albumId, @Valid @ModelAttribute("shareCommand") ShareAlbumCommand shareAlbumCommand, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            return setAlbumModel(albumId, model);
+        } else {
+            sharedAlbumService.shareAlbum(shareAlbumCommand);
+            return "redirect:/albums";
+        }
     }
 
 

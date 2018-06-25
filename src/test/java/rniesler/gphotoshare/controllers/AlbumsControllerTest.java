@@ -101,11 +101,25 @@ public class AlbumsControllerTest {
     @Test
     public void testShareAlbum() throws Exception {
         String testId = "test";
-        ShareAlbumCommand command = ShareAlbumCommand.builder().albumId(testId).build();
-        mockMvc.perform(post("/albums/" + testId + "/share").flashAttr("shareAlbumCommand", command))
+        ShareAlbumCommand command = ShareAlbumCommand.builder().albumId(testId).publicUrl("test").build();
+        mockMvc.perform(post("/albums/" + testId).flashAttr("shareCommand", command))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/albums"));
         verify(sharedAlbumService).shareAlbum(command);
+    }
+
+    @Test
+    public void testShareAlbumInvalid() throws Exception {
+        String testId = "test";
+        ShareAlbumCommand command = ShareAlbumCommand.builder().albumId(testId).build();
+        GoogleAlbum album = GoogleAlbum.builder().id(testId).build();
+        when(albumService.getAlbum(testId)).thenReturn(Optional.of(album));
+        mockMvc
+                .perform(post("/albums/" + testId).flashAttr("shareCommand", command))
+                .andExpect(status().isOk())
+                .andExpect(view().name("shareAlbum"))
+                .andExpect(model().attribute("shareCommand", command))
+                .andExpect(model().attribute("album", album));
     }
 
     @Test

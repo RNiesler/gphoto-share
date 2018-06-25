@@ -58,12 +58,25 @@ public class CircleControllerTest {
         String owner = "test@test";
         when(securityService.getAuthenticatedEmail()).thenReturn(owner);
         Circle circle = Circle.builder().name("test").build();
-        mockMvc.perform(post("/circles").flashAttr("circle", circle))
+        mockMvc.perform(post("/circles").flashAttr("newcircle", circle))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/circles"));
         ArgumentCaptor<Circle> captor = ArgumentCaptor.forClass(Circle.class);
         verify(circleService).persist(captor.capture());
         assertEquals(owner, captor.getValue().getOwner());
+    }
+
+    @Test
+    public void testNewCircleInvalid() throws Exception {
+        String owner = "test@test";
+        when(securityService.getAuthenticatedEmail()).thenReturn(owner);
+        Circle circle = Circle.builder().build();
+        mockMvc.perform(post("/circles").flashAttr("newcircle", circle))
+                .andExpect(status().isOk())
+                .andExpect(view().name("circlelist"))
+                .andExpect(model().attributeExists("circles"))
+                .andExpect(model().attribute("newcircle", circle));
+        verify(circleService, never()).persist(any());
     }
 
     @Test
@@ -97,37 +110,6 @@ public class CircleControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/circles"));
         verify(circleService).deleteCircle(testId.toHexString());
-    }
-
-    @Test
-    public void testUpdateMembersNoCircle() throws Exception {
-        String testId = "wrong";
-        when(circleService.get(testId)).thenReturn(Optional.empty());
-        try {
-            mockMvc.perform(post("/circles/" + testId).flashAttr("circle", Circle.builder().name("test").build()));
-        } catch (NestedServletException servletException) {
-            assertTrue(servletException.getCause() instanceof CircleNotFoundException);
-        }
-        verify(circleService, never()).persist(any(Circle.class));
-    }
-
-    @Test
-    public void testUpdateMembers() throws Exception {
-        ObjectId testId = new ObjectId();
-        List<String> oldMembers = List.of("a@a", "b@b");
-        List<String> newMembers = List.of("a@a", "c@c", "d@d");
-        Circle circle = Circle.builder().id(testId).name("test").members(oldMembers).build();
-        when(circleService.get(testId.toHexString())).thenReturn(Optional.of(circle));
-
-        Circle command = Circle.builder().id(testId).members(newMembers).build();
-        mockMvc.perform(post("/circles/" + testId.toHexString()).flashAttr("circle", command))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/circles/" + testId.toHexString()));
-
-        // normally we should capture and verify members, but for some reason the members field of the command is null in the controller
-        ArgumentCaptor<Circle> captor = ArgumentCaptor.forClass(Circle.class);
-        verify(circleService).persist(captor.capture());
-        assertEquals(newMembers, captor.getValue().getMembers());
     }
 
     @Test
@@ -167,7 +149,7 @@ public class CircleControllerTest {
         when(circleService.get(testId)).thenReturn(Optional.empty());
         Person command = Person.builder().id(new ObjectId()).email("test@test").build();
         try {
-            mockMvc.perform(post("/circles/" + testId + "/members").flashAttr("person", command))
+            mockMvc.perform(post("/circles/" + testId + "/members").flashAttr("newMemberCommand", command))
                     .andExpect(status().isNotFound());
         } catch (NestedServletException servletException) {
             assertTrue(servletException.getCause() instanceof CircleNotFoundException);
@@ -182,12 +164,27 @@ public class CircleControllerTest {
         Circle circle = Circle.builder().id(testId).name("test").build();
         when(circleService.get(testId.toHexString())).thenReturn(Optional.of(circle));
         Person command = Person.builder().id(new ObjectId()).email("test@test").build();
-        mockMvc.perform(post("/circles/"+testId.toHexString()+"/members").flashAttr("person", command))
+        mockMvc.perform(post("/circles/" + testId.toHexString() + "/members").flashAttr("newMemberCommand", command))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/circles/"+testId.toHexString()));
+                .andExpect(redirectedUrl("/circles/" + testId.toHexString()));
         ArgumentCaptor<Circle> captor = ArgumentCaptor.forClass(Circle.class);
         verify(circleService).persist(captor.capture());
         assertEquals(command.getEmail(), captor.getValue().getMembers().get(0));
+    }
+
+
+    @Test
+    public void testAddMemberInvalid() throws Exception {
+        ObjectId testId = new ObjectId();
+        Circle circle = Circle.builder().id(testId).name("test").build();
+        when(circleService.get(testId.toHexString())).thenReturn(Optional.of(circle));
+        Person command = Person.builder().id(new ObjectId()).build();
+        mockMvc.perform(post("/circles/" + testId.toHexString() + "/members").flashAttr("newMemberCommand", command))
+                .andExpect(status().isOk())
+                .andExpect(view().name("circle"))
+                .andExpect(model().attributeExists("circle"))
+                .andExpect(model().attribute("newMemberCommand", command));
+        verify(circleService, never()).persist(any());
 
     }
 }

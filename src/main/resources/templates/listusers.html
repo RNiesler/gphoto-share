@@ -24,14 +24,17 @@
     </div>
 
     <h6>New User</h6>
-    <form action="#" th:action="@{/admin/users}" th:object="${newuser}" method="post" class="form-inline">
+    <form action="#" th:action="@{/admin/users}" th:object="${newuser}" method="post" class="form-inline needs-validation">
         <div class="form-group">
-            <input id="circleNameInput" type="text"
+            <input id="circleNameInput" type="email" class="form-control"
                    th:field="*{email}"
+                   th:classappend="${#fields.hasErrors('email') ? 'is-invalid' : ''}"
                    placeholder="New user's email"/>
+            <input type="submit" value="Create User" class="btn btn-primary"/>
+            <input type="reset" value="Reset" class="btn-secondary btn"/>
+            <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
+                 class="invalid-feedback"></div>
         </div>
-        <input type="submit" value="Create User" class="btn btn-primary"/>
-        <input type="reset" value="Reset" class="btn-secondary btn"/>
     </form>
 </section>
 </body>

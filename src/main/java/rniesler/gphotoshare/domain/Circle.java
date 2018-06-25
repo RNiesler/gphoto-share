@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Data
@@ -18,6 +19,7 @@ import java.util.List;
 public class Circle {
     @Id
     private ObjectId id;
+    @NotBlank
     private String name;
     private String description;
     private List<String> members;

@@ -14,7 +14,8 @@
     <div>
         <ul class="list-group">
             <li th:each="circle : ${circles}" class="list-group-item">
-                <form action="#" th:action="@{'/circles/'+${circle.id}+'/delete'}" method="post" class="form-inline circleform">
+                <form action="#" th:action="@{'/circles/'+${circle.id}+'/delete'}" method="post"
+                      class="form-inline circleform">
                     <a href="circle.html" th:href="@{'/circles/'+${circle.id}}" th:text="${circle.name}">Circle Name</a>
                     <input type="submit" value="Remove" class="btn btn-primary btn-sm"/>
                 </form>
@@ -23,14 +24,19 @@
     </div>
 
     <h6>New Circle</h6>
-    <form action="#" th:action="@{/circles/}" th:object="${newcircle}" method="post" class="form-inline">
+    <form action="#" th:action="@{/circles/}" th:object="${newcircle}" method="post"
+          class="form-inline needs-validation" novalidate>
         <div class="form-group">
             <input id="circleNameInput" type="text"
-                   th:field="*{name}"
+                   class="form-control"
+                   th:classappend="${#fields.hasErrors('name') ? 'is-invalid' : ''}"
+                   th:field=" *{name}"
                    placeholder="New circle name"/>
+            <input type="submit" value="Create Circle" class="btn btn-primary"/>
+            <input type="reset" value="Reset" class="btn-secondary btn"/>
+            <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
+                 class="invalid-feedback"></div>
         </div>
-        <input type="submit" value="Create Circle" class="btn btn-primary"/>
-        <input type="reset" value="Reset" class="btn-secondary btn"/>
     </form>
 </section>
 </body>

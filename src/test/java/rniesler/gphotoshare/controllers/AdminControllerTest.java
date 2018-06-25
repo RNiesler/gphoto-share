@@ -14,6 +14,8 @@ import rniesler.gphotoshare.services.SecurityMappingService;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -46,12 +48,24 @@ public class AdminControllerTest {
 
     @Test
     public void testAddUser() throws Exception {
-        mockMvc.perform(post("/admin/users"))
+        SecurityMapping command = SecurityMapping.builder().email("test@test").build();
+        mockMvc.perform(post("/admin/users").flashAttr("newuser", command))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/users"));
         ArgumentCaptor<SecurityMapping> captor = ArgumentCaptor.forClass(SecurityMapping.class);
         verify(securityMappingService).saveMapping(captor.capture());
         assertTrue(captor.getValue().getAuthorities().contains(Authorities.RNALLOWED.name()));
+    }
+
+    @Test
+    public void testAddUserInvalid() throws Exception {
+        SecurityMapping command = SecurityMapping.builder().build();
+        mockMvc.perform(post("/admin/users").flashAttr("newuser", command))
+                .andExpect(status().isOk())
+                .andExpect(view().name("listusers"))
+                .andExpect(model().attributeExists("users"))
+                .andExpect(model().attribute("newuser", command));
+        verify(securityMappingService, never()).saveMapping(any());
     }
 
     @Test

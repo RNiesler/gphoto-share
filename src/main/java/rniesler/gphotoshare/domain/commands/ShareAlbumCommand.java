@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Data
@@ -15,6 +16,7 @@ import java.util.List;
 public class ShareAlbumCommand {
     private String albumId;
     private List<ObjectId> sharedTo;
+    @NotBlank
     private String publicUrl;
     private String shareToken;
 }
