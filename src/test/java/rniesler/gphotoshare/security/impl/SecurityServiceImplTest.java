@@ -1,9 +1,9 @@
 package rniesler.gphotoshare.security.impl;
 
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -16,7 +16,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.test.context.annotation.SecurityTestExecutionListeners;
 import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
@@ -30,6 +30,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -37,7 +38,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SecurityTestExecutionListeners
 @WithMockOauth2User
 public class SecurityServiceImplTest {
@@ -51,7 +52,7 @@ public class SecurityServiceImplTest {
     @Mock
     private OAuth2AuthenticationToken token;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
         service = new SecurityServiceImpl(oAuth2AuthorizedClientService, personService, new RestTemplateBuilder());
@@ -77,10 +78,10 @@ public class SecurityServiceImplTest {
         assertEquals(TEST_EMAIL, service.getAuthenticatedEmail());
     }
 
-    @Test(expected = AuthenticationRequiredException.class)
+    @Test
     @WithAnonymousUser
     public void testGetAuthenticatedEmailWhenNotAuthenticated() {
-        service.getAuthenticatedEmail();
+        assertThrows(AuthenticationRequiredException.class, () -> service.getAuthenticatedEmail());
     }
 
     @Test
@@ -102,10 +103,10 @@ public class SecurityServiceImplTest {
         assertFalse(service.isAuthenticated());
     }
 
-    @Test(expected = AuthenticationRequiredException.class)
+    @Test
     @WithAnonymousUser
     public void testGetRestTemplateWhenNotAuthenticated() {
-        service.getOauth2AuthenticatedRestTemplate();
+        assertThrows(AuthenticationRequiredException.class, () -> service.getOauth2AuthenticatedRestTemplate());
     }
 
     @Test
@@ -130,7 +131,7 @@ public class SecurityServiceImplTest {
         server.verify();
     }
 
-    @Test(expected = GoogleApiException.class)
+    @Test
     public void googleApiTestResponseErrorHandler() {
         String testUrl = "http://testurl";
         String testResponse = "test";
@@ -147,12 +148,12 @@ public class SecurityServiceImplTest {
                 .andRespond(withStatus(HttpStatus.FORBIDDEN));
 
 
-        restTemplate.getForObject(testUrl, String.class);
+        assertThrows(GoogleApiException.class, () -> restTemplate.getForObject(testUrl, String.class));
     }
 
-    @Test(expected = AuthenticationRequiredException.class)
+    @Test
     @WithAnonymousUser
     public void getRestTemplateWhenNotAuthenticated() {
-        service.getOauth2AuthenticatedRestTemplate();
+        assertThrows(AuthenticationRequiredException.class, () -> service.getOauth2AuthenticatedRestTemplate());
     }
 }
