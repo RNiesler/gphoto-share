@@ -7,6 +7,30 @@
 <body>
 <section class="container">
     <div class="alert alert-danger">You are not allowed to access this page!</div>
+    <div th:if="${request != null || existingRequest != null}">
+        <h6>Request access</h6>
+        <div th:if="${existingRequest != null && !existingRequest.denied}" class="alert alert-primary">Your access
+            request is
+            pending approval
+        </div>
+        <div th:if="${existingRequest != null && existingRequest.denied}" class="alert alert-warning">Your access
+            request has
+            been denied
+        </div>
+        <form action="#" th:action="@{'/errors/requestAccess'}"
+              th:if="${request != null}" th:object="${request}"
+              method="post" class="form-inline needs-validation">
+            <div class="form-group">
+                <input type="hidden" th:field="*{email}"/>
+                <input type="text" th:field="*{name}" placeholder="Your name"
+                       class="form-control"
+                       th:classappend="${#fields.hasErrors('name') ? 'is-invalid' : ''}"/>
+                <input type="submit" value="Request Access" class="btn btn-primary"/>
+                <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
+                     class="invalid-feedback"></div>
+            </div>
+        </form>
+    </div>
 </section>
 </body>
 </html>

@@ -24,7 +24,8 @@
     </div>
 
     <h6>New User</h6>
-    <form action="#" th:action="@{/admin/users}" th:object="${newuser}" method="post" class="form-inline needs-validation">
+    <form action="#" th:action="@{/admin/users}" th:object="${newuser}" method="post"
+          class="form-inline needs-validation">
         <div class="form-group">
             <input id="circleNameInput" type="email" class="form-control"
                    th:field="*{email}"
@@ -36,6 +37,19 @@
                  class="invalid-feedback"></div>
         </div>
     </form>
+
+    <h6>Pending requests</h6>
+    <ul class="list-group">
+        <li th:each="request : ${requests}" class="list-group-item access-request-line">
+            <span th:text="${request.email + ' - ' + request.name}">test@test - Imie Nazwisko</span>
+            <form action="#" th:action="@{'/admin/accessRequest/'+${request.email}+'/grant'}" method="post">
+                <input type="submit" value="Grant" class="btn btn-primary"/>
+            </form>
+            <form action="#" th:action="@{'/admin/accessRequest/'+${request.email}+'/deny'}" method="post">
+                <input type="submit" value="Deny" class="btn btn-primary"/>
+            </form>
+        </li>
+    </ul>
 </section>
 </body>
 </html>

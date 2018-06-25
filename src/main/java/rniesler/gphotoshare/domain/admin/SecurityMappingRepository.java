@@ -9,4 +9,6 @@ public interface SecurityMappingRepository extends MongoRepository<SecurityMappi
     Optional<SecurityMapping> findByAuthoritiesContaining(String authority);
 
     List<SecurityMapping> findAllByAuthoritiesContaining(String authority);
+
+    Optional<SecurityMapping> findByEmailAndAuthoritiesContaining(String email, String authority);
 }

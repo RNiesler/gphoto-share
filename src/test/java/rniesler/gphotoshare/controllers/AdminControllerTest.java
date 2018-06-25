@@ -9,7 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import rniesler.gphotoshare.domain.admin.SecurityMapping;
 import rniesler.gphotoshare.security.Authorities;
-import rniesler.gphotoshare.services.SecurityMappingService;
+import rniesler.gphotoshare.services.AccessManagementService;
 
 import java.util.List;
 
@@ -27,18 +27,18 @@ public class AdminControllerTest {
     private MockMvc mockMvc;
 
     @Mock
-    private SecurityMappingService securityMappingService;
+    private AccessManagementService accessManagementService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(new AdminController(securityMappingService)).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(new AdminController(accessManagementService)).build();
     }
 
     @Test
     public void testListUsers() throws Exception {
         List<String> users = List.of("a@a", "b@b");
-        when(securityMappingService.listAllowedUsers()).thenReturn(users);
+        when(accessManagementService.listAllowedUsers()).thenReturn(users);
         mockMvc.perform(get("/admin/users"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("users", users))
@@ -53,7 +53,7 @@ public class AdminControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/users"));
         ArgumentCaptor<SecurityMapping> captor = ArgumentCaptor.forClass(SecurityMapping.class);
-        verify(securityMappingService).saveMapping(captor.capture());
+        verify(accessManagementService).saveMapping(captor.capture());
         assertTrue(captor.getValue().getAuthorities().contains(Authorities.RNALLOWED.name()));
     }
 
@@ -65,7 +65,7 @@ public class AdminControllerTest {
                 .andExpect(view().name("listusers"))
                 .andExpect(model().attributeExists("users"))
                 .andExpect(model().attribute("newuser", command));
-        verify(securityMappingService, never()).saveMapping(any());
+        verify(accessManagementService, never()).saveMapping(any());
     }
 
     @Test
@@ -73,6 +73,24 @@ public class AdminControllerTest {
         mockMvc.perform(post("/admin/users/test@test/delete"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/users"));
-        verify(securityMappingService).deleteMapping("test@test");
+        verify(accessManagementService).deleteMapping("test@test");
+    }
+
+    @Test
+    public void testGrantAccessRequest() throws Exception {
+        String testEmail = "test@test";
+        mockMvc.perform(post("/admin/accessRequest/" + testEmail + "/grant"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/users"));
+        verify(accessManagementService).grantAccessRequest(testEmail);
+    }
+
+    @Test
+    public void testDenyAccessRequest() throws Exception {
+        String testEmail = "test@test";
+        mockMvc.perform(post("/admin/accessRequest/" + testEmail + "/deny"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/users"));
+        verify(accessManagementService).denyAccessRequest(testEmail);
     }
 }

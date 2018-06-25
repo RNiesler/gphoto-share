@@ -6,7 +6,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import rniesler.gphotoshare.domain.admin.SecurityMapping;
 import rniesler.gphotoshare.security.Authorities;
-import rniesler.gphotoshare.services.SecurityMappingService;
+import rniesler.gphotoshare.services.AccessManagementService;
 
 import javax.validation.Valid;
 import java.util.Set;
@@ -14,10 +14,10 @@ import java.util.Set;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    private final SecurityMappingService securityMappingService;
+    private final AccessManagementService accessManagementService;
 
-    public AdminController(SecurityMappingService securityMappingService) {
-        this.securityMappingService = securityMappingService;
+    public AdminController(AccessManagementService accessManagementService) {
+        this.accessManagementService = accessManagementService;
     }
 
     @GetMapping("/users")
@@ -27,7 +27,8 @@ public class AdminController {
     }
 
     private String setListUsersModel(Model model) {
-        model.addAttribute("users", securityMappingService.listAllowedUsers());
+        model.addAttribute("users", accessManagementService.listAllowedUsers());
+        model.addAttribute("requests", accessManagementService.listPendingAccessRequests());
         return "listusers";
     }
 
@@ -40,14 +41,27 @@ public class AdminController {
             if (newSecurityMapping.getAuthorities() == null) {
                 newSecurityMapping.setAuthorities(Set.of(Authorities.RNALLOWED.name()));
             }
-            securityMappingService.saveMapping(newSecurityMapping);
+            accessManagementService.saveMapping(newSecurityMapping);
             return "redirect:/admin/users";
         }
     }
 
     @PostMapping("/users/{email}/delete")
     public String deleteUser(@PathVariable("email") String email) {
-        securityMappingService.deleteMapping(email);
+        accessManagementService.deleteMapping(email);
+        return "redirect:/admin/users";
+    }
+
+    @PostMapping("/accessRequest/{email}/grant")
+    public String grantAccessRequest(@PathVariable("email") String email) {
+        accessManagementService.grantAccessRequest(email);
+        return "redirect:/admin/users";
+
+    }
+
+    @PostMapping("/accessRequest/{email}/deny")
+    public String denyAccessRequest(@PathVariable("email") String email) {
+        accessManagementService.denyAccessRequest(email);
         return "redirect:/admin/users";
     }
 }
