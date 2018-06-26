@@ -2,14 +2,14 @@
 <html th:replace="~{layout :: layout(~{::title}, ~{::section})}"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>GPhoto-Share</title>
+    <title th:text="#{title}">GPhoto-Share</title>
 </head>
 <body>
 <section class="container">
-    <h1>Authentication required</h1>
-    <div th:if="${param.error != null}" class="alert alert-danger">Authentication has failed</div>
-    <div th:if="${param.logout != null}" class="alert alert-success">Logout was successful</div>
-    <h4>Login with:</h4>
+    <h1 th:text="#{authentication.required}">Authentication required</h1>
+    <div th:if="${param.error != null}" class="alert alert-danger" th:text="#{authentication.failed}">Authentication has failed</div>
+    <div th:if="${param.logout != null}" class="alert alert-success" th:text="#{logout.successful}">Logout was successful</div>
+    <h4 th:text="#{login.with}">Login with:</h4>
     <ul class="list-group">
         <li th:each="url : ${urls}" class="list-group-item"><a th:text="${url.key}" th:href="${url.value}">OAuth2
             Client</a></li>

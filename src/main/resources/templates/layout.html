@@ -38,29 +38,37 @@
         #logout {
             margin-left: 1em;
         }
+
+        .album-title-link {
+            color: black;
+        }
     </style>
 </head>
 <body>
 <div class="container-fluid">
     <div th:fragment="navigation" class="navigationrow navbar navbar-expand-lg">
         <ul class="navbar-nav">
-            <li class="nav-item"><a href="index.html" class="nav-link" th:href="@{/}">Home</a></li>
-            <li class="nav-item"><a href="albumlist.html" class="nav-link" th:href="@{/albums}">Albums</a></li>
-            <li class="nav-item"><a href="circlelist.html" class="nav-link" th:href="@{/circles}">Circles</a></li>
-            <li class="nav-item"><a href="albumlist.html" class="nav-link" th:href="@{/shared}">My Shared Albums</a>
+            <li class="nav-item"><a href="index.html" class="nav-link" th:href="@{/}" th:text="#{home}">Home</a></li>
+            <li class="nav-item"><a href="albumlist.html" class="nav-link" th:href="@{/albums}" th:text="#{albums}">Albums</a>
+            </li>
+            <li class="nav-item"><a href="circlelist.html" class="nav-link" th:href="@{/circles}" th:text="#{circles}">Circles</a>
+            </li>
+            <li class="nav-item"><a href="albumlist.html" class="nav-link" th:href="@{/shared}"
+                                    th:text="#{my.shared.albums}">My Shared Albums</a>
             </li>
             <li class="nav-item dropdown" sec:authorize="hasAuthority('ADMIN')">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button">Admin</a>
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" th:text="#{admin}">Admin</a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="listusers.html" th:href="@{/admin/users}">Manage Users</a>
+                    <a class="dropdown-item" href="listusers.html" th:href="@{/admin/users}" th:text="#{manage.users}">Manage
+                        Users</a>
                 </div>
             </li>
         </ul>
         <div th:fragment="logout" sec:authorize="isAuthenticated()">
             <form action="#" th:action="@{/logout}" method="post" class="form-inline">
-                <span><strong>User: </strong></span><span
+                <span><strong th:text="#{user}">User:</strong> </span><span
                     th:text="${#authentication.principal.attributes.get('name')}">User Name</span>
-                <input type="submit" value="Logout" id="logout" class="btn btn-primary"/>
+                <input type="submit" value="Logout" th:value="#{logout}" id="logout" class="btn btn-primary"/>
             </form>
         </div>
     </div>

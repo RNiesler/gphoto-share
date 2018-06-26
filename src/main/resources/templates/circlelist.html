@@ -2,14 +2,14 @@
 <html th:replace="~{layout :: layout(~{::title}, ~{::section})}"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>User Circles</title>
+    <title th:text="#{user.circles}">User Circles</title>
 </head>
 <body>
 <section class="container">
-    <h1>User Circles</h1>
-    <h6>Your circles</h6>
+    <h1 th:text="#{user.circles}">User Circles</h1>
+    <h6 th:text="#{your.circles}">Your circles</h6>
     <div th:if="${circles==null || circles.size()==0}">
-        <div class="alert alert-primary" role="alert">You have no circles</div>
+        <div class="alert alert-primary" role="alert" th:text="#{no.circles.alert}">You have no circles</div>
     </div>
     <div>
         <ul class="list-group">
@@ -17,13 +17,13 @@
                 <form action="#" th:action="@{'/circles/'+${circle.id}+'/delete'}" method="post"
                       class="form-inline circleform">
                     <a href="circle.html" th:href="@{'/circles/'+${circle.id}}" th:text="${circle.name}">Circle Name</a>
-                    <input type="submit" value="Remove" class="btn btn-primary btn-sm"/>
+                    <input type="submit" value="Remove" th:value="#{remove}" class="btn btn-primary btn-sm"/>
                 </form>
             </li>
         </ul>
     </div>
 
-    <h6>New Circle</h6>
+    <h6 th:text="#{new.circle}">New circle</h6>
     <form action="#" th:action="@{/circles/}" th:object="${newcircle}" method="post"
           class="form-inline needs-validation" novalidate>
         <div class="form-group">
@@ -31,9 +31,10 @@
                    class="form-control"
                    th:classappend="${#fields.hasErrors('name') ? 'is-invalid' : ''}"
                    th:field=" *{name}"
-                   placeholder="New circle name"/>
-            <input type="submit" value="Create Circle" class="btn btn-primary"/>
-            <input type="reset" value="Reset" class="btn-secondary btn"/>
+                   placeholder="New circle name"
+                   th:placeholder="#{new.circle.name}"/>
+            <input type="submit" value="Create circle" th:value="#{create.circle}" class="btn btn-primary"/>
+            <input type="reset" value="Reset" th:value="#{reset}" class="btn-secondary btn"/>
             <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
                  class="invalid-feedback"></div>
         </div>

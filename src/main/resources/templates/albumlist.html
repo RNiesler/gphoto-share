@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html th:replace="~{layout :: layout(~{::title}, ~{::section})}" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>User Albums</title>
+    <title th:text="#{user.albums}">User Albums</title>
 </head>
 <body>
 <section class="container">
-    <h1>User Albums</h1>
+    <h1 th:text="#{user.albums}">User Albums</h1>
     <ul class="pagination">
 
         <li class="page-item" th:if="${pageToken}"><a class="page-link" th:href="@{/albums}"
-                                                      href="albumlist.html">First</a>
+                                                      href="albumlist.html"
+                                                      th:text="#{first.page}">First</a>
         </li>
         <li class="page-item" th:if="${nextPageToken}"><a class="page-link"
                                                           th:href="@{/albums(nextPageToken=${nextPageToken})}"
-                                                          href="albumlist.html">Next</a>
+                                                          href="albumlist.html"
+                                                          th:text="#{next.page}">Next</a>
         </li>
     </ul>
     <div class="row albumcard">
@@ -22,17 +24,18 @@
                 <a th:href="${album.url}" target="_blank"><img class="card-img-top"
                                                                th:src="${album.coverPhotoUrl}"/></a>
                 <div class="card-body">
-                    <h5 class="card-title" th:text="${album.name}"><a class="btn btn-primary" th:href="${album.url}"
-                                                                      target="_blank">Album name</a></h5>
+                    <h5 class="card-title"><a class="album-title-link" th:href="${album.url}" th:text="${album.name}"
+                                              target="_blank">Album name</a></h5>
                 </div>
                 <div class="albumcardfooter">
-                    <a href="shareAlbum.html" th:href="@{'/albums/'+${album.id}}" class="btn btn-primary">Share</a>
+                    <a href="shareAlbum.html" th:href="@{'/albums/'+${album.id}}" class="btn btn-primary"
+                       th:text="#{share}">Share</a>
                 </div>
             </div>
         </div>
     </div>
     <div class="row" th:if="${albums == null || albums.size()==0}">
-        <div class="alert alert-primary" role="alert">No albums available</div>
+        <div class="alert alert-primary" role="alert" th:text="#{no.albums.available}">No albums available</div>
     </div>
 </section>
 </body>

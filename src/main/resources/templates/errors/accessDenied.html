@@ -2,20 +2,20 @@
 <html th:replace="~{layout :: layout(~{::title}, ~{::section})}"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Access denied</title>
+    <title th:text="#{access.denied}">Access denied</title>
 </head>
 <body>
 <section class="container">
-    <div class="alert alert-danger">You are not allowed to access this page!</div>
+    <div class="alert alert-danger" th:text="#{access.denied.alert}">You are not allowed to access this page!</div>
     <div th:if="${request != null || existingRequest != null}">
-        <h6>Request access</h6>
-        <div th:if="${existingRequest != null && !existingRequest.denied}" class="alert alert-primary">Your access
-            request is
-            pending approval
+        <h6 th:text="#{request.access}">Request access</h6>
+        <div th:if="${existingRequest != null && !existingRequest.denied}" class="alert alert-primary"
+             th:text="#{access.request.pending}">Your access
+            request is pending approval
         </div>
-        <div th:if="${existingRequest != null && existingRequest.denied}" class="alert alert-warning">Your access
-            request has
-            been denied
+        <div th:if="${existingRequest != null && existingRequest.denied}" class="alert alert-warning"
+             th:text="#{access.request.denied}">Your access
+            request has been denied
         </div>
         <form action="#" th:action="@{'/errors/requestAccess'}"
               th:if="${request != null}" th:object="${request}"
@@ -23,9 +23,9 @@
             <div class="form-group">
                 <input type="hidden" th:field="*{email}"/>
                 <input type="text" th:field="*{name}" placeholder="Your name"
-                       class="form-control"
+                       class="form-control" th:placeholder="#{your.name}"
                        th:classappend="${#fields.hasErrors('name') ? 'is-invalid' : ''}"/>
-                <input type="submit" value="Request Access" class="btn btn-primary"/>
+                <input type="submit" value="Request Access" th:value="#{request.access}" class="btn btn-primary"/>
                 <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
                      class="invalid-feedback"></div>
             </div>

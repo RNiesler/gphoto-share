@@ -2,11 +2,11 @@
 <html th:replace="~{layout :: layout(~{::title}, ~{::section})}"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Cannot contact Google API</title>
+    <title th:text="#{cannot.contact.google.api}">Cannot contact Google API</title>
 </head>
 <body>
 <section class="container">
-    <div class="alert alert-danger">Could not contact Google Photos API!</div>
+    <div class="alert alert-danger" th:text="#{cannot.contact.google.api}">Could not contact Google Photos API!</div>
 </section>
 </body>
 </html>
