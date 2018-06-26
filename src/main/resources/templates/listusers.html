@@ -17,7 +17,7 @@
                 <form action="#" th:action="@{'/admin/users/'+${user}+'/delete'}" method="post"
                       class="form-inline circleform">
                     <span th:text="${user}">user@email</span>
-                    <input type="submit" value="Remove" th:text="#{remove}" class="btn btn-primary btn-sm"/>
+                    <input type="submit" value="Remove" th:value="#{remove}" class="btn btn-primary btn-sm"/>
                 </form>
             </li>
         </ul>
