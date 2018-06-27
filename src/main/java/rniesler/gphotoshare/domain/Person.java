@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -21,4 +22,5 @@ public class Person {
     @NotBlank
     private String email;
     private String name;
+    private Set<WebPushSubscription> subscriptions;
 }

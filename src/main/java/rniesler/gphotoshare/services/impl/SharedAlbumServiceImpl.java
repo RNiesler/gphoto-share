@@ -2,9 +2,10 @@ package rniesler.gphotoshare.services.impl;
 
 import org.bson.types.Binary;
 import org.springframework.stereotype.Service;
-import rniesler.gphotoshare.domain.commands.ShareAlbumCommand;
+import rniesler.gphotoshare.domain.CircleRepository;
 import rniesler.gphotoshare.domain.SharedAlbum;
 import rniesler.gphotoshare.domain.SharedAlbumRepository;
+import rniesler.gphotoshare.domain.commands.ShareAlbumCommand;
 import rniesler.gphotoshare.domain.googleapi.GoogleAlbum;
 import rniesler.gphotoshare.exceptions.AlbumNotFoundException;
 import rniesler.gphotoshare.security.SecurityService;
@@ -13,17 +14,21 @@ import rniesler.gphotoshare.services.SharedAlbumService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SharedAlbumServiceImpl implements SharedAlbumService {
     private final SharedAlbumRepository sharedAlbumRepository;
     private final SecurityService securityService;
     private final AlbumService albumService;
+    private final CircleRepository circleRepository;
 
-    public SharedAlbumServiceImpl(SharedAlbumRepository sharedAlbumRepository, SecurityService securityService, AlbumService albumService) {
+    public SharedAlbumServiceImpl(SharedAlbumRepository sharedAlbumRepository, SecurityService securityService,
+                                  AlbumService albumService, CircleRepository circleRepository) {
         this.sharedAlbumRepository = sharedAlbumRepository;
         this.securityService = securityService;
         this.albumService = albumService;
+        this.circleRepository = circleRepository;
     }
 
     @Override
@@ -82,10 +87,22 @@ public class SharedAlbumServiceImpl implements SharedAlbumService {
             shareAlbumCommand.setPublicUrl(sharedAlbum.getPublicUrl());
             shareAlbumCommand.setShareToken(sharedAlbum.getShareToken());
             shareAlbumCommand.setSharedTo(sharedAlbum.getSharedTo());
+            shareAlbumCommand.setNotificationSent(sharedAlbum.isNotificationSent());
         } else if (album.getShareInfo() != null) {
             shareAlbumCommand.setPublicUrl(album.getShareInfo().getShareableUrl());
             shareAlbumCommand.setShareToken(album.getShareInfo().getShareToken());
+            shareAlbumCommand.setNotificationSent(false);
         }
         return shareAlbumCommand;
+    }
+
+    @Override
+    public List<String> getUsersForSharedAlbum(SharedAlbum sharedAlbum) {
+        return sharedAlbum.getSharedTo().stream()
+                .map(circleId -> circleRepository.findById(circleId))
+                .flatMap(Optional::stream)
+                .flatMap(circle -> circle.getMembers().stream())
+                .distinct()
+                .collect(Collectors.toList());
     }
 }

@@ -22,3 +22,10 @@ In CircleCI:
 * Set the following environment variables
  * HEROKU_APP_NAME
  * HEROKU_API_KEY
+ 
+For Web-Push:
+* Run `./gradlew copy` to extract libs to build/lib
+* Run `./generate-web-push-key.sh` to generate web-push key pair
+* Set WEBPUSH_KEYS_PRIVATE and WEBPUSH_KEYS_PUBLIC accordingly.
+* To test subscription:
+`java -cp "build/lib/*" nl.martijndwars.webpush.cli.Cli send-notification --subscription="<result of subscribe on the client>" --publicKey="<generated public key>" --privateKey="<generated private key>"` 

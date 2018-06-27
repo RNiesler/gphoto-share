@@ -7,10 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import rniesler.gphotoshare.domain.commands.ShareAlbumCommand;
 import rniesler.gphotoshare.domain.googleapi.AlbumsList;
 import rniesler.gphotoshare.exceptions.AlbumNotFoundException;
-import rniesler.gphotoshare.services.AlbumService;
-import rniesler.gphotoshare.services.CircleService;
-import rniesler.gphotoshare.services.SharedAlbumService;
-import rniesler.gphotoshare.services.ViewerService;
+import rniesler.gphotoshare.services.*;
 
 import javax.validation.Valid;
 import java.util.Optional;
@@ -22,12 +19,14 @@ public class AlbumsController {
     private final CircleService circleService;
     private final ViewerService viewerService;
     private final SharedAlbumService sharedAlbumService;
+    private final NotificationService notificationService;
 
-    public AlbumsController(AlbumService albumService, CircleService circleService, ViewerService viewerService, SharedAlbumService sharedAlbumService) {
+    public AlbumsController(AlbumService albumService, CircleService circleService, ViewerService viewerService, SharedAlbumService sharedAlbumService, NotificationService notificationService) {
         this.albumService = albumService;
         this.circleService = circleService;
         this.viewerService = viewerService;
         this.sharedAlbumService = sharedAlbumService;
+        this.notificationService = notificationService;
     }
 
     @GetMapping({"", "/"})
@@ -68,5 +67,11 @@ public class AlbumsController {
     public String joinAlbum(@PathVariable("id") String albumId) {
         viewerService.joinAlbum(albumId);
         return "redirect:/";
+    }
+
+    @PostMapping("/{id}/notify")
+    public String notify(@PathVariable("id") String id) {
+        notificationService.notify(id);
+        return "redirect:/albums/" + id;
     }
 }

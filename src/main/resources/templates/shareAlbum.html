@@ -40,8 +40,18 @@
                     </div>
                     <input type="submit" value="Share" th:value="#{share}" class="btn btn-primary"/>
                     <a href="#" class="btn btn-secondary disabled" th:text="#{clone.and.share}">Clone & Share</a>
-                    <a href="albumlist.html" class="btn btn-secondary" th:href="@{/albums}" th:text="'&#8592; '+#{back.to.albums}">
+                    <a href="albumlist.html" class="btn btn-secondary" th:href="@{/albums}"
+                       th:text="'&#8592; '+#{back.to.albums}">
                         Back to albums</a>
+                </form>
+                <h5 th:text="#{notifications}">Notifications</h5>
+                <div th:if="${shareCommand.notificationSent}" class="alert alert-success" th:text="#{notifications.already.sent}">Notifications already sent
+                </div>
+                <form action="#" th:action="@{'/albums/'+${album.id}+'/notify'}" method="post"
+                      th:object="${shareCommand}" th:if="${!shareCommand.notificationSent}">
+                    <input type="submit" class="btn btn-primary"
+                           th:value="#{send.notifications}"
+                           value="Send notifications"/>
                 </form>
             </div>
         </div>

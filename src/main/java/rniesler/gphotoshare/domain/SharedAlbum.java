@@ -9,7 +9,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Document
@@ -27,5 +26,6 @@ public class SharedAlbum {
     private List<ObjectId> sharedTo; // ids of circles
     private String shareToken;
     private Binary coverPhoto;
+    private boolean notificationSent;
 
 }

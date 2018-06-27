@@ -13,10 +13,7 @@ import rniesler.gphotoshare.domain.commands.ShareAlbumCommand;
 import rniesler.gphotoshare.domain.googleapi.AlbumsList;
 import rniesler.gphotoshare.domain.googleapi.GoogleAlbum;
 import rniesler.gphotoshare.exceptions.AlbumNotFoundException;
-import rniesler.gphotoshare.services.AlbumService;
-import rniesler.gphotoshare.services.CircleService;
-import rniesler.gphotoshare.services.SharedAlbumService;
-import rniesler.gphotoshare.services.ViewerService;
+import rniesler.gphotoshare.services.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,11 +37,13 @@ public class AlbumsControllerTest {
     private ViewerService viewerService;
     @Mock
     private SharedAlbumService sharedAlbumService;
+    @Mock
+    private NotificationService notificationService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(new AlbumsController(albumService, circleService, viewerService, sharedAlbumService)).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(new AlbumsController(albumService, circleService, viewerService, sharedAlbumService, notificationService)).build();
     }
 
     @Test
@@ -129,5 +128,14 @@ public class AlbumsControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"));
         verify(viewerService).joinAlbum(testId);
+    }
+
+    @Test
+    public void testNotify() throws Exception {
+        String testId = "test";
+        mockMvc.perform(post("/albums/" + testId + "/notify"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/albums/" + testId));
+        verify(notificationService).notify(testId);
     }
 }

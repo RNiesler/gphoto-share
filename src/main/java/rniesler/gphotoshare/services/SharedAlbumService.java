@@ -14,4 +14,6 @@ public interface SharedAlbumService {
     void shareAlbum(ShareAlbumCommand shareCommand);
 
     ShareAlbumCommand getShareAlbumCommand(String id);
+
+    List<String> getUsersForSharedAlbum(SharedAlbum sharedAlbum);
 }

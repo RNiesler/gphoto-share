@@ -19,4 +19,5 @@ public class ShareAlbumCommand {
     @NotBlank
     private String publicUrl;
     private String shareToken;
+    private boolean notificationSent;
 }

@@ -28,7 +28,7 @@ repositories {
 dependencies {
     compileOnly('org.projectlombok:lombok')
     compile('org.springframework.boot:spring-boot-starter-web')
-//    compile('org.springframework.boot:spring-boot-devtools')
+    compile('org.springframework.boot:spring-boot-devtools')
 
     compile('org.springframework.boot:spring-boot-starter-cache')
     compile('org.springframework.boot:spring-boot-starter-data-redis')
@@ -44,6 +44,8 @@ dependencies {
     compile('org.webjars:bootstrap:4.1.1')
     compile('org.webjars:jquery:3.3.1-1')
     compile('org.webjars.npm:popper.js:1.14.3')
+
+    compile('nl.martijndwars:web-push:3.1.0')
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('org.springframework.security:spring-security-test')
@@ -61,4 +63,9 @@ jacocoTestReport {
         xml.enabled true
         html.enabled false
     }
+}
+
+task copyDeps(type: Copy) {
+    from configurations.runtime
+    into 'build/lib'
 }

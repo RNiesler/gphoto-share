@@ -35,3 +35,8 @@ google:
   photos.api:
     albums: https://photoslibrary.googleapis.com/v1/albums
     sharedAlbums: https://photoslibrary.googleapis.com/v1/sharedAlbums
+
+webpush:
+  keys:
+    private: TODO
+    public: TODO

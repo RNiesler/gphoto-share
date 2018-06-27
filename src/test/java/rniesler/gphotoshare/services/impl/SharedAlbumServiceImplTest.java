@@ -7,10 +7,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.client.RestTemplate;
-import rniesler.gphotoshare.domain.Person;
+import rniesler.gphotoshare.domain.*;
 import rniesler.gphotoshare.domain.commands.ShareAlbumCommand;
-import rniesler.gphotoshare.domain.SharedAlbum;
-import rniesler.gphotoshare.domain.SharedAlbumRepository;
 import rniesler.gphotoshare.domain.googleapi.GoogleAlbum;
 import rniesler.gphotoshare.domain.googleapi.ShareInfo;
 import rniesler.gphotoshare.security.SecurityService;
@@ -36,13 +34,15 @@ public class SharedAlbumServiceImplTest {
     private AlbumService albumService;
     @Mock
     private RestTemplate restTemplate;
+    @Mock
+    private CircleRepository circleRepository;
 
     private final static String TEST_EMAIL = "test@email";
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        service = new SharedAlbumServiceImpl(sharedAlbumRepository, securityService, albumService);
+        service = new SharedAlbumServiceImpl(sharedAlbumRepository, securityService, albumService, circleRepository);
         when(securityService.getAuthenticatedEmail()).thenReturn(TEST_EMAIL);
         when(securityService.getOauth2AuthenticatedRestTemplate()).thenReturn(restTemplate);
     }
@@ -75,7 +75,8 @@ public class SharedAlbumServiceImplTest {
         String shareToken = "token";
         String url = "url";
         List<ObjectId> sharedTo = List.of(new ObjectId(), new ObjectId());
-        SharedAlbum album = SharedAlbum.builder().id(testId).name("name").shareToken(shareToken).sharedTo(sharedTo).publicUrl(url).build();
+        SharedAlbum album = SharedAlbum.builder().id(testId).name("name").shareToken(shareToken).sharedTo(sharedTo)
+                .publicUrl(url).notificationSent(true).build();
         when(sharedAlbumRepository.findById(testId)).thenReturn(Optional.of(album));
         when(albumService.getAlbum(testId)).thenReturn(Optional.of(new GoogleAlbum()));
         ShareAlbumCommand shareAlbumCommand = service.getShareAlbumCommand(testId);
@@ -83,6 +84,7 @@ public class SharedAlbumServiceImplTest {
         assertEquals(shareToken, shareAlbumCommand.getShareToken());
         assertEquals(url, shareAlbumCommand.getPublicUrl());
         assertEquals(sharedTo, shareAlbumCommand.getSharedTo());
+        assertTrue(shareAlbumCommand.isNotificationSent());
     }
 
     @Test
@@ -99,6 +101,7 @@ public class SharedAlbumServiceImplTest {
         assertEquals(shareToken, shareAlbumCommand.getShareToken());
         assertEquals(url, shareAlbumCommand.getPublicUrl());
         assertNull(shareAlbumCommand.getSharedTo());
+        assertFalse(shareAlbumCommand.isNotificationSent());
     }
 
     @Test
@@ -125,7 +128,7 @@ public class SharedAlbumServiceImplTest {
 
         GoogleAlbum album = GoogleAlbum.builder().id(testId).coverPhotoUrl(url).name(name).build();
         when(albumService.getAlbum(testId)).thenReturn(Optional.of(album));
-        when(restTemplate.getForObject(url, byte[].class)).thenReturn(new byte[] {0,0});
+        when(restTemplate.getForObject(url, byte[].class)).thenReturn(new byte[]{0, 0});
 
         service.shareAlbum(command);
         ArgumentCaptor<SharedAlbum> captor = ArgumentCaptor.forClass(SharedAlbum.class);
@@ -153,7 +156,7 @@ public class SharedAlbumServiceImplTest {
         GoogleAlbum album = GoogleAlbum.builder().id(testId).coverPhotoUrl(url).name(name).shareInfo(shareInfo).build();
         when(albumService.getAlbum(testId)).thenReturn(Optional.of(album));
         when(securityService.getAuthenticatedUser()).thenReturn(Optional.of(new Person()));
-        when(restTemplate.getForObject(url, byte[].class)).thenReturn(new byte[] {0,0});
+        when(restTemplate.getForObject(url, byte[].class)).thenReturn(new byte[]{0, 0});
 
         service.shareAlbum(command);
         ArgumentCaptor<SharedAlbum> captor = ArgumentCaptor.forClass(SharedAlbum.class);
@@ -196,11 +199,33 @@ public class SharedAlbumServiceImplTest {
 
         GoogleAlbum googleAlbum = GoogleAlbum.builder().coverPhotoUrl(photoUrl).build();
         when(albumService.getAlbum(any())).thenReturn(Optional.of(googleAlbum));
-        when(restTemplate.getForObject(photoUrl, byte[].class)).thenReturn(new byte[] {0,0});
+        when(restTemplate.getForObject(photoUrl, byte[].class)).thenReturn(new byte[]{0, 0});
 
         service.shareAlbum(command);
         ArgumentCaptor<SharedAlbum> captor = ArgumentCaptor.forClass(SharedAlbum.class);
         verify(sharedAlbumRepository).save(captor.capture());
         assertNull(captor.getValue().getShareToken());
+    }
+
+    @Test
+    public void testGetUsersForSharedAlbum() {
+        ObjectId circleId1 = new ObjectId();
+        ObjectId circleId2 = new ObjectId();
+        String a = "a@a";
+        String b = "b@b";
+        String c = "c@c";
+
+        Circle circle1 = Circle.builder().id(circleId1).members(List.of(a, b)).build();
+        Circle circle2 = Circle.builder().id(circleId2).members(List.of(c, b)).build();
+        List<ObjectId> circleIds = List.of(circleId1, circleId2);
+        String testId = "test";
+        SharedAlbum sharedAlbum = SharedAlbum.builder().id(testId).sharedTo(circleIds).build();
+        when(circleRepository.findById(circleId1)).thenReturn(Optional.of(circle1));
+        when(circleRepository.findById(circleId2)).thenReturn(Optional.of(circle2));
+        List<String> emails = service.getUsersForSharedAlbum(sharedAlbum);
+        assertTrue(emails.contains(a));
+        assertTrue(emails.contains(b));
+        assertTrue(emails.contains(c));
+        assertEquals(3, emails.size());
     }
 }
