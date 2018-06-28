@@ -6,11 +6,6 @@
 </head>
 <body>
 <section class="container">
-    <div>
-        <button type="button" class="btn btn-secondary" onclick="subscribeUserToPush()"
-                th:text="#{subscribe.to.notifications}">Subscribe to notifications
-        </button>
-    </div>
     <div class="row albumcard">
         <div class="card-columns">
             <div class="card" th:each="album : ${albums}">

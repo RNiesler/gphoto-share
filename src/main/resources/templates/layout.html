@@ -72,6 +72,16 @@
                 </div>
             </li>
         </ul>
+        <div sec:authorize="isAuthenticated()">
+            <div id="subscribe-button-div" class="d-none">
+                <button type="button" class="btn btn-outline-success" onclick="subscribeUserToPush()"
+                        th:text="#{subscribe.to.notifications}">Subscribe to notifications
+                </button>
+            </div>
+            <div id="notifications-blocked-div" class="d-none">
+                <small th:text="#{notifications.blocked}">Notifications blocked</small>
+            </div>
+        </div>
         <div th:fragment="logout" sec:authorize="isAuthenticated()">
             <form action="#" th:action="@{/logout}" method="post" class="form-inline">
                 <span><strong th:text="#{user}">User:</strong> </span><span
@@ -96,7 +106,6 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
         th:src="@{/webjars/bootstrap/4.1.1/js/bootstrap.min.js}"
         crossorigin="anonymous"></script>
-<script src="../static/js/webpush.js" th:src="@{/js/webpush.js}"></script>
 <script type="text/javascript">
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
@@ -107,8 +116,11 @@
                 // registration failed :(
                 console.log('ServiceWorker registration failed: ', err);
             });
+
+            toggleNotificationControls();
         });
     }
 </script>
+<script src="../static/js/webpush.js" th:src="@{/js/webpush.js}"></script>
 </body>
 </html>

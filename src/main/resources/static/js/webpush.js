@@ -13,6 +13,47 @@ function urlBase64ToUint8Array(base64String) {
     return outputArray;
 }
 
+function getNotificationPermissionState() {
+    if (navigator.permissions) {
+        return navigator.permissions.query({name: 'notifications'})
+            .then((result) => {
+                return result.state;
+            });
+    }
+
+    return new Promise((resolve) => {
+        resolve(Notification.permission);
+    });
+}
+
+
+function toggleNotificationControls() {
+    getNotificationPermissionState()
+        .then((state) => {
+            console.log('Permission state: ', state)
+            var notificationsBlocked = $("div[id='notifications-blocked-div']")
+            var subscribeButton = $("div[id='subscribe-button-div']")
+            if (state == 'denied') {
+                notificationsBlocked.removeClass('d-none')
+                if (!subscribeButton.hasClass('d-none')) {
+                    subscribeButton.addClass('d-none')
+                }
+            } else if (state != 'granted') {
+                subscribeButton.removeClass('d-none')
+                if (!notificationsBlocked.hasClass('d-none')) {
+                    notificationsBlocked.addClass('d-none')
+                }
+            } else {
+                if (!notificationsBlocked.hasClass('d-none')) {
+                    notificationsBlocked.addClass('d-none')
+                }
+                if (!subscribeButton.hasClass('d-none')) {
+                    subscribeButton.addClass('d-none')
+                }
+            }
+        });
+}
+
 function subscribeUserToPush() {
     if ('serviceWorker' in navigator) {
         return navigator.serviceWorker.register('service-worker.js')
@@ -42,9 +83,10 @@ function subscribeUserToPush() {
                     }
                 })
                     .catch(error => console.error('Error when sending subscription:', error))
-                    .then(response => console.log('Successfully sent subscription'));
+                    .then(response => console.log('Successfully sent subscription'))
 
                 return pushSubscription;
-            });
+            })
+            .finally(() => toggleNotificationControls());
     }
 }
