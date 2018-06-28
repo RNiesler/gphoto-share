@@ -21,6 +21,7 @@ public class OAuth2LoginSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/oauth_login/**").permitAll()
                 .antMatchers("/service-worker.js").permitAll()
                 .antMatchers("/js/**").permitAll()
+                .antMatchers("/icons/**").permitAll()
                 .antMatchers("/webjars/**").permitAll()
                 .antMatchers("/admin/**").hasAuthority(Authorities.ADMIN.name())
                 .antMatchers("/errors/**").authenticated()
