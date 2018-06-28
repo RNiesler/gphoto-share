@@ -21,7 +21,7 @@ self.addEventListener('push', function (event) {
 self.addEventListener('notificationclick', function (event) {
     var url = event.notification.data
     if (event.action == 'open-app') {
-        url = 'https://rngphoto.herokuapp.com' //TODO externalize url
+        url = self.registration.scope
     }
     event.waitUntil(clients.openWindow(url))
 })
