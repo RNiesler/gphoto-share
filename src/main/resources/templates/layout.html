@@ -55,19 +55,25 @@
 <body>
 <div class="container-fluid">
     <div th:fragment="navigation" class="navigationrow navbar navbar-expand-lg">
+        <div class="navbar-brand"><img src="../static/icons/camera.png" th:src="@{/icons/camera.png}" width="30"
+                                       height="30"/></div>
         <ul class="navbar-nav">
-            <li class="nav-item"><a href="index.html" class="nav-link" th:href="@{/}" th:text="#{home}">Home</a></li>
+            <li class="nav-item"><a href="index.html" class="nav-link" th:href="@{/}" th:text="#{home}">Home</a>
+            </li>
             <li class="nav-item"><a href="albumlist.html" class="nav-link" th:href="@{/albums}" th:text="#{albums}">Albums</a>
             </li>
-            <li class="nav-item"><a href="circlelist.html" class="nav-link" th:href="@{/circles}" th:text="#{circles}">Circles</a>
+            <li class="nav-item"><a href="circlelist.html" class="nav-link" th:href="@{/circles}"
+                                    th:text="#{circles}">Circles</a>
             </li>
             <li class="nav-item"><a href="albumlist.html" class="nav-link" th:href="@{/shared}"
                                     th:text="#{my.shared.albums}">My Shared Albums</a>
             </li>
             <li class="nav-item dropdown" sec:authorize="hasAuthority('ADMIN')">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" th:text="#{admin}">Admin</a>
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                   th:text="#{admin}">Admin</a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="listusers.html" th:href="@{/admin/users}" th:text="#{manage.users}">Manage
+                    <a class="dropdown-item" href="listusers.html" th:href="@{/admin/users}"
+                       th:text="#{manage.users}">Manage
                         Users</a>
                 </div>
             </li>
