@@ -26,6 +26,7 @@ public class SharedAlbum {
     private List<ObjectId> sharedTo; // ids of circles
     private String shareToken;
     private Binary coverPhoto;
+    private Binary coverPhotoIcon;
     private boolean notificationSent;
 
 }

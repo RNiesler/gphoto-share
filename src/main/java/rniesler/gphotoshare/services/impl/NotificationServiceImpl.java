@@ -84,7 +84,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .title(sharedAlbum.getName())
                 .url(sharedAlbum.getPublicUrl())
                 .description("Album has been shared with you")
-//                .iconUrl("test") //TODO icon - photo url
+                .iconUrl("/shared/" + sharedAlbum.getId() + "/icon.jpg")
                 .build();
         try {
             return pushService.sendAsync(new Notification(convertSubscription(personSubscription.subscription),

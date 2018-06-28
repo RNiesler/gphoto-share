@@ -13,6 +13,7 @@ import rniesler.gphotoshare.domain.googleapi.GoogleAlbum;
 import rniesler.gphotoshare.domain.googleapi.ShareInfo;
 import rniesler.gphotoshare.security.SecurityService;
 import rniesler.gphotoshare.services.AlbumService;
+import rniesler.gphotoshare.services.ImageService;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,13 +37,15 @@ public class SharedAlbumServiceImplTest {
     private RestTemplate restTemplate;
     @Mock
     private CircleRepository circleRepository;
+    @Mock
+    private ImageService imageService;
 
     private final static String TEST_EMAIL = "test@email";
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        service = new SharedAlbumServiceImpl(sharedAlbumRepository, securityService, albumService, circleRepository);
+        service = new SharedAlbumServiceImpl(sharedAlbumRepository, securityService, albumService, circleRepository, imageService);
         when(securityService.getAuthenticatedEmail()).thenReturn(TEST_EMAIL);
         when(securityService.getOauth2AuthenticatedRestTemplate()).thenReturn(restTemplate);
     }
@@ -129,6 +132,7 @@ public class SharedAlbumServiceImplTest {
         GoogleAlbum album = GoogleAlbum.builder().id(testId).coverPhotoUrl(url).name(name).build();
         when(albumService.getAlbum(testId)).thenReturn(Optional.of(album));
         when(restTemplate.getForObject(url, byte[].class)).thenReturn(new byte[]{0, 0});
+        when(imageService.resizeToIcon(any(byte[].class))).thenReturn(new byte[0]);
 
         service.shareAlbum(command);
         ArgumentCaptor<SharedAlbum> captor = ArgumentCaptor.forClass(SharedAlbum.class);
@@ -157,6 +161,7 @@ public class SharedAlbumServiceImplTest {
         when(albumService.getAlbum(testId)).thenReturn(Optional.of(album));
         when(securityService.getAuthenticatedUser()).thenReturn(Optional.of(new Person()));
         when(restTemplate.getForObject(url, byte[].class)).thenReturn(new byte[]{0, 0});
+        when(imageService.resizeToIcon(any(byte[].class))).thenReturn(new byte[0]);
 
         service.shareAlbum(command);
         ArgumentCaptor<SharedAlbum> captor = ArgumentCaptor.forClass(SharedAlbum.class);
@@ -200,6 +205,7 @@ public class SharedAlbumServiceImplTest {
         GoogleAlbum googleAlbum = GoogleAlbum.builder().coverPhotoUrl(photoUrl).build();
         when(albumService.getAlbum(any())).thenReturn(Optional.of(googleAlbum));
         when(restTemplate.getForObject(photoUrl, byte[].class)).thenReturn(new byte[]{0, 0});
+        when(imageService.resizeToIcon(any(byte[].class))).thenReturn(new byte[0]);
 
         service.shareAlbum(command);
         ArgumentCaptor<SharedAlbum> captor = ArgumentCaptor.forClass(SharedAlbum.class);

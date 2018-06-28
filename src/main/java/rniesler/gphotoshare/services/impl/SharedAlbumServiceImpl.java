@@ -1,5 +1,6 @@
 package rniesler.gphotoshare.services.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.Binary;
 import org.springframework.stereotype.Service;
 import rniesler.gphotoshare.domain.CircleRepository;
@@ -10,6 +11,7 @@ import rniesler.gphotoshare.domain.googleapi.GoogleAlbum;
 import rniesler.gphotoshare.exceptions.AlbumNotFoundException;
 import rniesler.gphotoshare.security.SecurityService;
 import rniesler.gphotoshare.services.AlbumService;
+import rniesler.gphotoshare.services.ImageService;
 import rniesler.gphotoshare.services.SharedAlbumService;
 
 import java.util.List;
@@ -17,18 +19,21 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class SharedAlbumServiceImpl implements SharedAlbumService {
     private final SharedAlbumRepository sharedAlbumRepository;
     private final SecurityService securityService;
     private final AlbumService albumService;
     private final CircleRepository circleRepository;
+    private final ImageService imageService;
 
     public SharedAlbumServiceImpl(SharedAlbumRepository sharedAlbumRepository, SecurityService securityService,
-                                  AlbumService albumService, CircleRepository circleRepository) {
+                                  AlbumService albumService, CircleRepository circleRepository, ImageService imageService) {
         this.sharedAlbumRepository = sharedAlbumRepository;
         this.securityService = securityService;
         this.albumService = albumService;
         this.circleRepository = circleRepository;
+        this.imageService = imageService;
     }
 
     @Override
@@ -64,7 +69,9 @@ public class SharedAlbumServiceImpl implements SharedAlbumService {
             }
             albumService.getAlbum(shareCommand.getAlbumId()).ifPresentOrElse((googleAlbum) -> {
                 sharedAlbum.setName(googleAlbum.getName());
-                sharedAlbum.setCoverPhoto(new Binary(getContents(googleAlbum.getCoverPhotoUrl())));
+                byte[] coverPhoto = getContents(googleAlbum.getCoverPhotoUrl());
+                sharedAlbum.setCoverPhoto(new Binary(coverPhoto));
+                sharedAlbum.setCoverPhotoIcon(new Binary(imageService.resizeToIcon(coverPhoto)));
             }, () -> {
                 throw new AlbumNotFoundException();
             });

@@ -6,6 +6,7 @@ self.addEventListener('push', function (event) {
         const options = {
             body: notification.description,
             data: notification.url,
+            icon: notification.iconUrl,
             requireInteraction: true,
             actions: [
                 {action: 'open-album', title: 'Open the Album', icon: '/icons/gphoto.png'},

@@ -47,6 +47,8 @@ dependencies {
 
     compile('nl.martijndwars:web-push:3.1.0')
 
+    compile('org.imgscalr:imgscalr-lib:4.1')
+    
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('org.springframework.security:spring-security-test')
 
