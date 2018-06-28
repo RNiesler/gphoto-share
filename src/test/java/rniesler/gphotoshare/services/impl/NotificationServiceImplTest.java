@@ -1,5 +1,6 @@
 package rniesler.gphotoshare.services.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushService;
 import org.apache.http.HttpResponse;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 import rniesler.gphotoshare.domain.*;
+import rniesler.gphotoshare.domain.notifications.NewAlbumNotification;
 import rniesler.gphotoshare.domain.notifications.WebPushKeys;
 import rniesler.gphotoshare.domain.notifications.WebPushSubscription;
 import rniesler.gphotoshare.exceptions.AlbumNotFoundException;
@@ -104,7 +106,8 @@ public class NotificationServiceImplTest {
     @Test
     public void testNotify() throws JoseException, GeneralSecurityException, IOException {
         String testId = "test";
-        SharedAlbum album = SharedAlbum.builder().id(testId).build();
+        SharedAlbum album = SharedAlbum.builder().id(testId).name("test-name")
+                .publicUrl("http://testurl").build();
         Person person = preparePersonWithSubscription();
         when(sharedAlbumService.getSharedAlbum(testId)).thenReturn(Optional.of(album));
         when(sharedAlbumService.getUsersForSharedAlbum(album)).thenReturn(List.of(person.getEmail()));
@@ -122,7 +125,9 @@ public class NotificationServiceImplTest {
         verify(pushService).sendAsync(pushServiceCaptor.capture());
         WebPushSubscription subscription = person.getSubscriptions().iterator().next();
         assertEquals(subscription.getEndpoint(), pushServiceCaptor.getValue().getEndpoint());
-        //TODO verify payload
+        NewAlbumNotification notification = new ObjectMapper().readerFor(NewAlbumNotification.class).readValue(pushServiceCaptor.getValue().getPayload());
+        assertEquals(album.getName(), notification.getTitle());
+        assertEquals(album.getPublicUrl(), notification.getUrl());
 
         verify(personRepository, never()).save(any(Person.class)); // verify the subscription was not deleted
     }
