@@ -1,9 +1,27 @@
 self.addEventListener('push', function (event) {
     if (event.data) {
-        console.log('This push event has data: ', event.data.text());
+        console.log('Received notification')
+        const notification = event.data.json()
+        const title = notification.title
+        const options = {
+            body: notification.description,
+            data: notification.url,
+            requireInteraction: true,
+            actions: [
+                {action: 'open-album', title: 'Open the Album', icon: '/icons/gphoto.png'},
+                {action: 'open-app', title: 'Open the Application', icon: '/icons/camera.png'}
+            ]
+        }
+        event.waitUntil(self.registration.showNotification(title, options))
     } else {
-        console.log('This push event has no data.');
+        console.warn('Unexpected notification with no payload.')
     }
-
-    event.waitUntil(self.registration.showNotification(event.data.text()));
 });
+
+self.addEventListener('notificationclick', function (event) {
+    var url = event.notification.data
+    if (event.action == 'open-app') {
+        url = 'https://rngphoto.herokuapp.com' //TODO externalize url
+    }
+    event.waitUntil(clients.openWindow(url))
+})

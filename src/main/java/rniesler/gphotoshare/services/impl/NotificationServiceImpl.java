@@ -1,5 +1,6 @@
 package rniesler.gphotoshare.services.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.martijndwars.webpush.Notification;
@@ -9,6 +10,8 @@ import org.apache.http.HttpResponse;
 import org.jose4j.lang.JoseException;
 import org.springframework.stereotype.Service;
 import rniesler.gphotoshare.domain.*;
+import rniesler.gphotoshare.domain.notifications.NewAlbumNotification;
+import rniesler.gphotoshare.domain.notifications.WebPushSubscription;
 import rniesler.gphotoshare.exceptions.AlbumNotFoundException;
 import rniesler.gphotoshare.exceptions.PersonNotFoundException;
 import rniesler.gphotoshare.services.NotificationService;
@@ -57,7 +60,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .flatMap(Optional::stream)
                 .filter(person -> person.getSubscriptions() != null)
                 .flatMap(person -> person.getSubscriptions().stream().map(subscription -> new PersonSubscription(person, subscription)))
-                .collect(HashMap::new, (map, personSubscription) -> map.put(personSubscription, sendNotification(personSubscription)), HashMap::putAll);
+                .collect(HashMap::new, (map, personSubscription) -> map.put(personSubscription, sendNotification(personSubscription, sharedAlbum)), HashMap::putAll);
         for (Map.Entry<PersonSubscription, Future<HttpResponse>> entry : futureMap.entrySet()) {
             if (entry.getValue() != null) {
                 try {
@@ -76,10 +79,16 @@ public class NotificationServiceImpl implements NotificationService {
     /**
      * @return Future of PushService response or null if exception thrown by the PushService.
      */
-    private Future<HttpResponse> sendNotification(PersonSubscription personSubscription) {
+    private Future<HttpResponse> sendNotification(PersonSubscription personSubscription, SharedAlbum sharedAlbum) {
+        NewAlbumNotification notification = NewAlbumNotification.builder()
+                .title(sharedAlbum.getName())
+                .url(sharedAlbum.getPublicUrl())
+                .description("Album has been shared with you")
+//                .iconUrl("test") //TODO icon - photo url
+                .build();
         try {
             return pushService.sendAsync(new Notification(convertSubscription(personSubscription.subscription),
-                    "New album has been shared")); //TODO payload
+                    new ObjectMapper().writeValueAsString(notification)));
         } catch (IOException | GeneralSecurityException | JoseException e) {
             log.error("Could not send notification. " + e.getClass().getName() + ": " + e.getMessage());
             return null;

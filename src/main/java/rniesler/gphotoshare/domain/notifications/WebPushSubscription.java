@@ -1,4 +1,4 @@
-package rniesler.gphotoshare.domain;
+package rniesler.gphotoshare.domain.notifications;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

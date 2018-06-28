@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import rniesler.gphotoshare.domain.notifications.WebPushSubscription;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Set;

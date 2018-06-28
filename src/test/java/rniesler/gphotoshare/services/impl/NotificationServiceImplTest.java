@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 import rniesler.gphotoshare.domain.*;
+import rniesler.gphotoshare.domain.notifications.WebPushKeys;
+import rniesler.gphotoshare.domain.notifications.WebPushSubscription;
 import rniesler.gphotoshare.exceptions.AlbumNotFoundException;
 import rniesler.gphotoshare.exceptions.PersonNotFoundException;
 import rniesler.gphotoshare.services.SharedAlbumService;

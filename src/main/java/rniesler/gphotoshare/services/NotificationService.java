@@ -1,6 +1,6 @@
 package rniesler.gphotoshare.services;
 
-import rniesler.gphotoshare.domain.WebPushSubscription;
+import rniesler.gphotoshare.domain.notifications.WebPushSubscription;
 
 public interface NotificationService {
     void notify(String albumId);

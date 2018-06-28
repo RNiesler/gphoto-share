@@ -8,7 +8,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import rniesler.gphotoshare.domain.WebPushSubscription;
+import rniesler.gphotoshare.domain.notifications.WebPushSubscription;
 import rniesler.gphotoshare.services.NotificationService;
 
 import static org.mockito.Mockito.verify;
